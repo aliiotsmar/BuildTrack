@@ -2,7 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>نظام إدارة وتتبع البناء الشامل - ALI.N.HAKAMI</title>
     <style>
         :root {
@@ -19,12 +21,84 @@
             --engraved-green: #1e824c;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 🔒 تثبيت الشاشة بالكامل لمنع اهتزاز Safari */
+        html, body {
+            height: 100%;
+            width: 100%;
             margin: 0;
-            padding: 20px 20px 80px 20px; /* مسافة أمان للفوتر */
-            color: #333;
+            padding: 0;
+            overflow: hidden; /* يمنع تمرير الصفحة بالكامل */
+            background-color: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* 📱 الهيكل الرئيسي لتطبيقات الآيفون */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 📌 الهيدر العلوي الثابت 100% */
+        .app-header {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: calc(8px + env(safe-area-inset-top)) 15px 10px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 3px solid var(--accent);
+            z-index: 1000;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .app-title-area h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.05em;
+        }
+
+        .app-title-area p {
+            margin: 2px 0 0 0;
+            font-size: 0.72em;
+            color: #666;
+        }
+
+        /* 🏷️ توقيع المصمم المحفور */
+        .designer-text-engraved {
+            font-size: 0.78em;
+            font-weight: 800;
+            color: var(--engraved-green);
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 📜 محتوى التطبيق القابل للتمرير بسلاسة داخل الشاشة */
+        .app-body {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* تمرير سلس جداً للآيفون */
+            padding: 12px max(12px, env(safe-area-inset-right)) 20px max(12px, env(safe-area-inset-left));
         }
 
         .container {
@@ -32,82 +106,34 @@
             margin: 0 auto;
         }
 
-        /* 🎨 ترويسة البرنامج واللوجو */
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--card-bg);
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-            border-bottom: 3px solid var(--accent);
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .app-logo {
-            width: 55px;
-            height: 55px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid var(--accent);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .app-title-area h1 {
-            margin: 0;
-            color: var(--primary);
-            font-size: 1.4em;
-        }
-
-        .app-title-area p {
-            margin: 3px 0 0 0;
-            font-size: 0.85em;
-            color: #666;
-        }
-
-        /* 🏷️ توقيع المصمم المحفور باللون الأخضر بدون خلفية ولا أيقونات */
-        .designer-text-engraved {
-            font-size: 0.9em;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--engraved-green);
-            background: transparent;
-            padding: 5px 0;
-            /* تأثير الحفر المباشر على الخط باللون الأخضر */
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.9), 
-                        -1px -1px 2px rgba(0, 0, 0, 0.25);
-        }
-
         /* 🔘 شريط التبويبات */
         .tabs-header {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
+            padding-bottom: 6px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .tabs-header::-webkit-scrollbar {
+            display: none;
         }
 
         .tab-btn {
-            padding: 10px 16px;
-            font-size: 0.95em;
+            padding: 10px 14px;
+            font-size: 0.88em;
             font-weight: bold;
             border: none;
             background: #e2e8f0;
             color: var(--primary);
-            border-radius: 8px 8px 0 0;
+            border-radius: 10px 10px 0 0;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .tab-btn.active {
@@ -126,21 +152,21 @@
         /* كروت الإحصائيات */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             text-align: center;
         }
 
-        .card h3 { margin: 0 0 10px 0; font-size: 0.9em; color: #666; }
-        .card .amount { font-size: 1.5em; font-weight: bold; }
+        .card h3 { margin: 0 0 6px 0; font-size: 0.8em; color: #666; }
+        .card .amount { font-size: 1.15em; font-weight: bold; }
         .card.budget .amount { color: var(--info); }
         .card.spent .amount { color: var(--danger); }
         .card.remaining .amount { color: var(--accent); }
@@ -148,32 +174,35 @@
         /* النماذج والجداول */
         .section {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
         }
 
         .section h3 {
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--primary);
+            font-size: 1.05em;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
+        /* حجم الخط 16px يمنع زوم الآيفون التلقائي */
         input, select, textarea, button {
-            padding: 10px;
+            padding: 11px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.95em;
+            border-radius: 8px;
+            font-size: 16px; 
             outline: none;
             font-family: inherit;
+            width: 100%;
         }
 
         button {
@@ -183,112 +212,102 @@
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
+            font-size: 0.95em;
         }
 
-        button:hover { opacity: 0.9; }
+        button:active { opacity: 0.8; }
 
         .btn-add-budget { background-color: var(--info); }
 
-        /* الجدول */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 5px;
+            min-width: 500px;
         }
 
         th, td {
-            padding: 12px;
+            padding: 10px 8px;
             text-align: right;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
+            font-size: 0.88em;
         }
 
         th { background-color: #f8f9fa; color: var(--primary); }
 
         .btn-delete {
             background-color: var(--danger);
-            padding: 5px 10px;
+            padding: 6px 10px;
             font-size: 0.8em;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         .badge-income {
             background-color: #e8f8f0;
             color: var(--accent);
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 0.8em;
         }
 
         .badge-expense {
             background-color: #fdeaea;
             color: var(--danger);
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 0.8em;
         }
 
-        /* 📁 المجلدات والمعرض */
+        /* المجلدات والمعرض */
         .folder-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .folder-card {
             background: #fff8e7;
             border: 2px dashed #f39c12;
-            padding: 15px;
+            padding: 12px 8px;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
             position: relative;
         }
 
-        .folder-card:hover {
-            background: #fff3d1;
-            transform: translateY(-2px);
-        }
-
-        .folder-card .icon {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .folder-card h4 {
-            margin: 0;
-            font-size: 0.95em;
-            color: #d35400;
-        }
-
-        .folder-card .count {
-            font-size: 0.75em;
-            color: #7f8c8d;
-            margin-top: 4px;
-        }
+        .folder-card .icon { font-size: 1.8em; margin-bottom: 3px; }
+        .folder-card h4 { margin: 0; font-size: 0.88em; color: #d35400; }
+        .folder-card .count { font-size: 0.72em; color: #7f8c8d; margin-top: 3px; }
 
         .folder-delete-btn {
             position: absolute;
-            top: 5px;
-            left: 5px;
+            top: 4px;
+            left: 4px;
             background: var(--danger);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 0.7em;
-            line-height: 22px;
+            width: 20px;
+            height: 20px;
+            font-size: 0.65em;
+            line-height: 20px;
             padding: 0;
-            cursor: pointer;
         }
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .media-card {
@@ -303,23 +322,18 @@
 
         .media-card img {
             width: 100%;
-            height: 140px;
+            height: 110px;
             object-fit: cover;
-            cursor: pointer;
             background: #eee;
         }
 
-        .media-info {
-            padding: 10px;
-            flex-grow: 1;
-        }
-
-        .media-info h4 { margin: 0 0 5px 0; font-size: 0.95em; }
-        .media-info p { margin: 0; font-size: 0.8em; color: #777; }
+        .media-info { padding: 8px; flex-grow: 1; }
+        .media-info h4 { margin: 0 0 4px 0; font-size: 0.85em; }
+        .media-info p { margin: 0; font-size: 0.75em; color: #777; }
         
         .upload-options {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 10px;
             flex-wrap: wrap;
         }
@@ -328,192 +342,157 @@
             background-color: var(--primary);
             color: white;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: bold;
             flex: 1;
+            min-width: 140px;
         }
 
-        /* 📝 قائمة الملاحظات */
+        /* الملاحظات */
         .notes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .note-card {
             background: #fffbe6;
             border: 1px solid #ffe58f;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .note-card h4 { margin: 0 0 8px 0; color: #d48806; }
-        .note-card p { margin: 0 0 10px 0; white-space: pre-wrap; font-size: 0.95em; flex-grow: 1; }
+        .note-card h4 { margin: 0 0 6px 0; color: #d48806; font-size: 0.95em; }
+        .note-card p { margin: 0 0 8px 0; white-space: pre-wrap; font-size: 0.88em; flex-grow: 1; }
         .note-card img {
             width: 100%;
-            max-height: 160px;
+            max-height: 130px;
             object-fit: cover;
             border-radius: 6px;
-            margin-bottom: 10px;
-            cursor: pointer;
+            margin-bottom: 8px;
             border: 1px solid #ffe58f;
         }
-        .note-card .note-date { font-size: 0.75em; color: #999; }
+        .note-card .note-date { font-size: 0.72em; color: #999; }
 
-        /* 📞 أزرار الاتصال والواتساب */
-        .action-btns {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .btn-call {
-            background-color: var(--info);
+        /* أزرار الاتصال */
+        .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+        .btn-call, .btn-whatsapp {
             color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 5px 8px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 0.85em;
+            font-size: 0.78em;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             font-weight: bold;
         }
+        .btn-call { background-color: var(--info); }
+        .btn-whatsapp { background-color: var(--whatsapp); }
 
-        .btn-whatsapp {
-            background-color: var(--whatsapp);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.85em;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: bold;
-        }
-
-        /* 📊 شريط مؤشر الاستهلاك */
+        /* شريط الميزانية */
         .progress-bar-container {
             width: 100%;
             background-color: #e0e0e0;
             border-radius: 10px;
             overflow: hidden;
-            height: 25px;
-            margin: 15px 0;
+            height: 22px;
+            margin: 10px 0;
         }
 
         .progress-bar {
             height: 100%;
             background-color: var(--accent);
             text-align: center;
-            line-height: 25px;
+            line-height: 22px;
             color: white;
             font-weight: bold;
-            font-size: 0.85em;
+            font-size: 0.78em;
             transition: width 0.5s;
         }
 
         .alert-box {
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: bold;
+            font-size: 0.88em;
         }
 
-        /* أدوات الأرشيف ومؤشراته */
         .archive-indicator-box {
             background: #eef6fc;
             border: 1px solid #b3d7ff;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
         }
 
         .indicator-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 8px;
             margin-top: 10px;
         }
 
         .indicator-card {
             background: white;
-            padding: 10px;
+            padding: 8px 4px;
             border-radius: 6px;
             text-align: center;
             border: 1px solid #ddd;
         }
 
-        .indicator-card span {
-            display: block;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--primary);
-        }
+        .indicator-card small { font-size: 0.7em; }
+        .indicator-card span { display: block; font-size: 1.05em; font-weight: bold; color: var(--primary); }
 
-        .archive-box {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .archive-btn {
-            padding: 12px 15px;
-            font-size: 0.95em;
-            flex: 1;
-            min-width: 200px;
-        }
+        .archive-box { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .archive-btn { padding: 11px; font-size: 0.88em; flex: 1; min-width: 100%; }
 
         .folder-nav-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #edf2f7;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        /* 🔻 الفوتر التوقيعي الأخضر المحفور بدون خلفية سوداء */
+        /* 📌 الفوتر السفلي الثابت 100% */
         .app-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(244, 247, 246, 0.95);
-            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+            background: rgba(244, 247, 246, 0.96);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
             color: #555;
             text-align: center;
-            padding: 10px 0;
-            font-size: 0.85em;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-            z-index: 1000;
+            padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px;
+            font-size: 0.78em;
             border-top: 1px solid #e0e0e0;
+            z-index: 1000;
         }
 
         .footer-engraved-text {
             color: var(--engraved-green);
             font-weight: 800;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.9), -1px -1px 1px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 🖼️ الترويسة -->
+<div class="app-shell">
+
+    <!-- 📌 الهيدر الثابت علوياً -->
     <header class="app-header">
         <div class="header-brand">
             <img src="https://d.top4top.io/p_3857ra1to1.jpeg" alt="شعار البرنامج" class="app-logo">
@@ -523,299 +502,310 @@
             </div>
         </div>
         
-        <!-- 🏷️ الحقوق المحفورة بالأخضر الشفاف بدون أزرار أو خلفيات -->
         <div class="designer-text-engraved">
-            ALI.N.HAKAMI
+         
         </div>
     </header>
 
-    <!-- 🔘 أزرار التبويبات -->
-    <div class="tabs-header">
-        <button class="tab-btn active" onclick="switchTab(event, 'tab-finance')">💵 المصروفات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات والصور</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف</button>
-    </div>
-
-    <!-- ------------------ التبويب الأول: المالية والمصروفات ------------------ -->
-    <div id="tab-finance" class="tab-content active">
-        <div class="stats-grid">
-            <div class="card budget">
-                <h3>إجمالي التمويل/الميزانية</h3>
-                <div class="amount" id="displayBudget">0 ر.س</div>
-            </div>
-            <div class="card spent">
-                <h3>إجمالي المصروفات</h3>
-                <div class="amount" id="displaySpent">0 ر.س</div>
-            </div>
-            <div class="card remaining">
-                <h3>المبلغ المتبقي</h3>
-                <div class="amount" id="displayRemaining">0 ر.س</div>
-            </div>
-        </div>
-
-        <div class="section" style="border-right: 5px solid var(--info);">
-            <h3>➕ إضافة تمويل / زيادة الميزانية</h3>
-            <div class="form-grid">
-                <input type="number" id="addAmountInput" placeholder="المبلغ المضاف (ريال)">
-                <input type="text" id="addReasonInput" placeholder="المصدر/السبب (مثال: القرض العقاري، مدخرات)">
-                <input type="date" id="addDateInput">
-            </div>
-            <button class="btn-add-budget" onclick="addIncome()" style="width: 100%;">إضافة وإيداع المبلغ</button>
-        </div>
-
-        <div class="section" style="border-right: 5px solid var(--danger);">
-            <h3>➖ تسجيل دفعة / مصروف جديد</h3>
-            <div class="form-grid">
-                <input type="text" id="itemName" placeholder="الوصف (مثلاً: دفعة التلييس الأولى)">
-                <input type="number" id="itemAmount" placeholder="المبلغ (ريال)">
-
-                <select id="itemStage" onchange="toggleCustomStageInput()">
-                    <option value="" disabled selected>-- اختر المرحلة --</option>
-                    <option value="تأسيس ومستندات">تأسيس ومستندات</option>
-                    <option value="القواعد والأساسات">القواعد والأساسات</option>
-                    <option value="الدور الأرضي">الدور الأرضي</option>
-                    <option value="الدور الأول">الدور الأول</option>
-                    <option value="السطح والستارة">السطح والستارة</option>
-                    <option value="السباكة والكهرباء">السباكة والكهرباء</option>
-                    <option value="التلييس والترميم">التلييس والترميم</option>
-                    <option value="التشطيبات والبلاط">التشطيبات والبلاط</option>
-                    <option value="customStage">✍️ (مرحلة أخرى - كتابة يدوية)</option>
-                </select>
-
-                <input type="text" id="customStageInput" placeholder="اكتب اسم المرحلة المخصصة..." style="display: none;">
-                
-                <input type="date" id="itemDate">
-            </div>
-            <button onclick="addExpense()" style="width: 100%;">تسجيل المصروف</button>
-        </div>
-
-        <div class="section">
-            <h3>📄 كشف حركة الحساب (الإيداعات والمصروفات)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>التاريخ</th>
-                        <th>النوع</th>
-                        <th>البيان / الوصف</th>
-                        <th>المرحلة / المصدر</th>
-                        <th>المبلغ</th>
-                        <th>إجراء</th>
-                    </tr>
-                </thead>
-                <tbody id="transactionsTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ------------------ التبويب الثاني: مكتبة الصور والمجلدات ------------------ -->
-    <div id="tab-library" class="tab-content">
-        <div class="section" style="border-right: 5px solid var(--warning);">
-            <h3>📂 إدارة المجلدات والمستندات</h3>
-
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="newFolderName" placeholder="اسم المجلد الجديد (مثال: عقود، مخططات، فواتير الكهرباء...)" style="flex: 1;">
-                <button style="background-color: var(--warning);" onclick="createFolder()">➕ إنشاء مجلد</button>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-
-            <h3>📤 رفع مستند / صورة جديدة</h3>
-            <div class="form-grid">
-                <input type="text" id="docTitle" placeholder="اسم المستند (مثال: فاتورة صب الخرسانة)">
-                <select id="docCategory">
-                    <option value="فاتورة">فاتورة / إيصال</option>
-                    <option value="مخطط">مخطط هندسي</option>
-                    <option value="صورة موقع">صورة من الموقع</option>
-                    <option value="عقد">عقد / اتفاقية</option>
-                    <option value="أخرى">مستند آخر</option>
-                </select>
-                <select id="docFolderSelect" style="border: 2px solid var(--warning); font-weight: bold;">
-                    <option value="" disabled selected>-- اختر المجلد المطلوب (إجباري) --</option>
-                </select>
-            </div>
-
-            <div class="upload-options">
-                <label class="upload-btn-label">
-                    📂 اختيار صورة/مستند من الجهاز
-                    <input type="file" id="fileDevice" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-                </label>
-                
-                <label class="upload-btn-label" style="background-color: var(--purple);">
-                    📸 التقاط صورة بالكاميرا
-                    <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
-                </label>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="folder-nav-bar">
-                <div id="currentFolderPath" style="font-weight: bold; color: var(--primary); font-size: 1.05em;">
-                    📂 استعراض المجلدات
-                </div>
-                <button id="btnBackToFolders" style="display: none; background: var(--primary); padding: 6px 14px; font-size: 0.85em;" onclick="openFolder(null)">⬅️ العودة لجميع المجلدات</button>
-            </div>
-
-            <div class="folder-grid" id="folderGrid"></div>
-
-            <h3 id="galleryTitle" style="margin-top:20px; color:var(--primary);">📄 المستندات والصور</h3>
-            <div class="gallery-grid" id="galleryGrid"></div>
-        </div>
-    </div>
-
-    <!-- ------------------ التبويب الثالث: دليل الاتصال ------------------ -->
-    <div id="tab-contacts" class="tab-content">
-        <div class="section" style="border-right: 5px solid var(--accent);">
-            <h3>📞 إضافة جهة اتصال جديدة</h3>
-            <div class="form-grid">
-                <input type="text" id="contactName" placeholder="الاسم / اسم الشركة">
-                <input type="text" id="contactRole" placeholder="المهنة / التخصص (مثال: معلم سيراميك، سباك)">
-                <input type="tel" id="contactPhone" placeholder="رقم الجوال (مثال: 0501234567)">
-            </div>
-            <button onclick="addContact()" style="width: 100%;">حفظ في دليل الاتصال</button>
-
-            <h3 style="margin-top: 25px;">دليل الأرقام والجهات</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>الاسم / الشركة</th>
-                        <th>المهنة / التخصص</th>
-                        <th>رقم الهاتف</th>
-                        <th>إجراءات التواصل</th>
-                        <th>إجراء</th>
-                    </tr>
-                </thead>
-                <tbody id="contactsTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ------------------ التبويب الرابع: التقارير والتحليل ------------------ -->
-    <div id="tab-reports" class="tab-content">
-        <div class="section" style="border-right: 5px solid var(--info);">
-            <h3>📈 حالة الميزانية ومعدل الاستهلاك</h3>
-            <div id="statusAlert" class="alert-box"></div>
-
-            <p style="margin-bottom: 5px; font-weight: bold;">نسبة المستهلك من الميزانية:</p>
-            <div class="progress-bar-container">
-                <div id="progressBar" class="progress-bar" style="width: 0%;">0%</div>
-            </div>
-        </div>
-
-        <div class="section" style="border-right: 5px solid var(--purple);">
-            <h3>🏗️ توزيع المصروفات حسب مراحل البناء</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>المرحلة</th>
-                        <th>المبلغ المستهلك</th>
-                        <th>النسبة من إجمالي المصروفات</th>
-                    </tr>
-                </thead>
-                <tbody id="stageReportTableBody"></tbody>
-            </table>
-        </div>
-
-        <div class="section" style="border-right: 5px solid var(--danger);">
-            <h3>🔥 أعلى 3 دفعات صُرفت حتى الآن</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>البيان</th>
-                        <th>المرحلة</th>
-                        <th>التاريخ</th>
-                        <th>المبلغ</th>
-                    </tr>
-                </thead>
-                <tbody id="topExpensesTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ------------------ التبويب الخامس: الملاحظات والمهام ------------------ -->
-    <div id="tab-notes" class="tab-content">
-        <div class="section" style="border-right: 5px solid var(--warning);">
-            <h3>📝 إضافة ملاحظة جديدة / تذكير</h3>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="noteTitle" placeholder="عنوان الملاحظة (مثال: تنبيه لمهندس الفحص قبل الصب)">
-                <textarea id="noteDetails" rows="3" placeholder="تفاصيل الملاحظة أو التعليمات..."></textarea>
-                
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label class="upload-btn-label" style="background-color: var(--info); font-weight: normal; padding: 8px;">
-                        🖼️ إرفاق صورة مع الملاحظة (اختياري)
-                        <input type="file" id="noteImageInput" accept="image/*" style="display: none;" onchange="previewNoteImage(event)">
-                    </label>
-                    <span id="noteImageName" style="font-size: 0.8em; color: #666;">لم يتم اختيار صورة</span>
-                </div>
-
-                <button style="background-color: var(--warning);" onclick="addNote()">تثبيت الملاحظة</button>
-            </div>
-
-            <h3>سجل الملاحظات والمهام</h3>
-            <div class="notes-grid" id="notesGrid"></div>
-        </div>
-    </div>
-
-    <!-- ------------------ التبويب السادس: الأرشيف وإدارة البيانات ------------------ -->
-    <div id="tab-archive" class="tab-content">
-        <div class="section" style="border-right: 5px solid var(--primary);">
-            <h3>📂 حالة ومؤشرات الأرشيف الشامل</h3>
+    <!-- 📜 الجسم الرئيسي للمحتوى (القابل للتمرير الحقيقي) -->
+    <main class="app-body">
+        <div class="container">
             
-            <div class="archive-indicator-box">
-                <div style="display:flex; align-items:center; gap:8px; font-weight:bold; color:var(--accent);">
-                    <span style="font-size:1.4em;">🟢</span>
-                    <span>الحفظ التلقائي المحلي: مفعل ويعمل بنجاح</span>
+            <!-- 🔘 أزرار التبويبات -->
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab(event, 'tab-finance')">💵 المصروفات</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات والصور</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف</button>
+            </div>
+
+            <!-- ------------------ التبويب الأول: المالية والمصروفات ------------------ -->
+            <div id="tab-finance" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="card budget">
+                        <h3>إجمالي التمويل</h3>
+                        <div class="amount" id="displayBudget">0 ر.س</div>
+                    </div>
+                    <div class="card spent">
+                        <h3>المصروفات</h3>
+                        <div class="amount" id="displaySpent">0 ر.س</div>
+                    </div>
+                    <div class="card remaining">
+                        <h3>المتبقي</h3>
+                        <div class="amount" id="displayRemaining">0 ر.س</div>
+                    </div>
                 </div>
-                <p style="font-size: 0.85em; color: #555; margin: 5px 0 0 0;">جميع بياناتك ومستنداتك وملاحظاتك مُخزنة ومحفوظة آلياً على جهازك الحالي.</p>
-                
-                <div class="indicator-grid">
-                    <div class="indicator-card">
-                        <small>📁 المجلدات</small>
-                        <span id="indFolders">0</span>
+
+                <div class="section" style="border-right: 4px solid var(--info);">
+                    <h3>➕ إضافة تمويل / زيادة الميزانية</h3>
+                    <div class="form-grid">
+                        <input type="number" id="addAmountInput" placeholder="المبلغ المضاف (ريال)" inputmode="decimal">
+                        <input type="text" id="addReasonInput" placeholder="المصدر (مثال: القرض العقاري)">
+                        <input type="date" id="addDateInput">
                     </div>
-                    <div class="indicator-card">
-                        <small>🖼️ الصور والملفات</small>
-                        <span id="indLibrary">0</span>
+                    <button class="btn-add-budget" onclick="addIncome()">إضافة وإيداع المبلغ</button>
+                </div>
+
+                <div class="section" style="border-right: 4px solid var(--danger);">
+                    <h3>➖ تسجيل دفعة / مصروف جديد</h3>
+                    <div class="form-grid">
+                        <input type="text" id="itemName" placeholder="الوصف (مثلاً: دفعة التلييس)">
+                        <input type="number" id="itemAmount" placeholder="المبلغ (ريال)" inputmode="decimal">
+
+                        <select id="itemStage" onchange="toggleCustomStageInput()">
+                            <option value="" disabled selected>-- اختر المرحلة --</option>
+                            <option value="تأسيس ومستندات">تأسيس ومستندات</option>
+                            <option value="القواعد والأساسات">القواعد والأساسات</option>
+                            <option value="الدور الأرضي">الدور الأرضي</option>
+                            <option value="الدور الأول">الدور الأول</option>
+                            <option value="السطح والستارة">السطح والستارة</option>
+                            <option value="السباكة والكهرباء">السباكة والكهرباء</option>
+                            <option value="التلييس والترميم">التلييس والترميم</option>
+                            <option value="التشطيبات والبلاط">التشطيبات والبلاط</option>
+                            <option value="customStage">✍️ (مرحلة أخرى - كتابة يدوية)</option>
+                        </select>
+
+                        <input type="text" id="customStageInput" placeholder="اكتب اسم المرحلة..." style="display: none;">
+                        <input type="date" id="itemDate">
                     </div>
-                    <div class="indicator-card">
-                        <small>📝 الملاحظات</small>
-                        <span id="indNotes">0</span>
-                    </div>
-                    <div class="indicator-card">
-                        <small>📞 الدليل</small>
-                        <span id="indContacts">0</span>
-                    </div>
-                    <div class="indicator-card">
-                        <small>💵 المعاملات المالية</small>
-                        <span id="indTransactions">0</span>
+                    <button onclick="addExpense()">تسجيل المصروف</button>
+                </div>
+
+                <div class="section">
+                    <h3>📄 كشف حركة الحساب</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>النوع</th>
+                                    <th>البيان</th>
+                                    <th>المرحلة</th>
+                                    <th>المبلغ</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <h3>💾 أدوات النسخ الاحتياطي واستعادة البيانات</h3>
-            <p style="font-size: 0.9em; color: #666;">يمكنك تحميل نسخة احتياطية كاملة من كافة بيانات المشروع للحفاظ عليها أو نقلها لهاتف/جهاز آخر:</p>
+            <!-- ------------------ التبويب الثاني: مكتبة الصور والمجلدات ------------------ -->
+            <div id="tab-library" class="tab-content">
+                <div class="section" style="border-right: 4px solid var(--warning);">
+                    <h3>📂 إدارة المجلدات والمستندات</h3>
 
-            <div class="archive-box">
-                <button class="archive-btn" style="background-color: var(--primary);" onclick="exportData()">💾 تحميل ملف الأرشيف الكامل (Backup)</button>
-                <button class="archive-btn" style="background-color: var(--warning);" onclick="document.getElementById('importFile').click()">📂 استرجاع أرشيف سابق</button>
-                <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-direction: column;">
+                        <input type="text" id="newFolderName" placeholder="اسم المجلد الجديد (مثال: عقود، مخططات)">
+                        <button style="background-color: var(--warning);" onclick="createFolder()">➕ إنشاء مجلد</button>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
+
+                    <h3>📤 رفع مستند / صورة جديدة</h3>
+                    <div class="form-grid">
+                        <input type="text" id="docTitle" placeholder="اسم المستند (مثال: فاتورة صب الخرسانة)">
+                        <select id="docCategory">
+                            <option value="فاتورة">فاتورة / إيصال</option>
+                            <option value="مخطط">مخطط هندسي</option>
+                            <option value="صورة موقع">صورة من الموقع</option>
+                            <option value="عقد">عقد / اتفاقية</option>
+                            <option value="أخرى">مستند آخر</option>
+                        </select>
+                        <select id="docFolderSelect" style="border: 2px solid var(--warning); font-weight: bold;">
+                            <option value="" disabled selected>-- اختر المجلد المطلوبة (إجباري) --</option>
+                        </select>
+                    </div>
+
+                    <div class="upload-options">
+                        <label class="upload-btn-label">
+                            📂 اختيار صورة/مستند
+                            <input type="file" id="fileDevice" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                        </label>
+                        
+                        <label class="upload-btn-label" style="background-color: var(--purple);">
+                            📸 التقاط بالكاميرا
+                            <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="folder-nav-bar">
+                        <div id="currentFolderPath" style="font-weight: bold; color: var(--primary); font-size: 0.95em;">
+                            📂 استعراض المجلدات
+                        </div>
+                        <button id="btnBackToFolders" style="display: none; background: var(--primary); padding: 5px 10px; font-size: 0.8em; width: auto;" onclick="openFolder(null)">⬅️ جميع المجلدات</button>
+                    </div>
+
+                    <div class="folder-grid" id="folderGrid"></div>
+
+                    <h3 id="galleryTitle" style="margin-top:15px; color:var(--primary); font-size: 1em;">📄 المستندات والصور</h3>
+                    <div class="gallery-grid" id="galleryGrid"></div>
+                </div>
             </div>
 
-            <hr style="border:0; border-top: 1px solid #eee; margin: 25px 0;">
+            <!-- ------------------ التبويب الثالث: دليل الاتصال ------------------ -->
+            <div id="tab-contacts" class="tab-content">
+                <div class="section" style="border-right: 4px solid var(--accent);">
+                    <h3>📞 إضافة جهة اتصال جديدة</h3>
+                    <div class="form-grid">
+                        <input type="text" id="contactName" placeholder="الاسم / الشركة">
+                        <input type="text" id="contactRole" placeholder="المهنة (مثال: سباك، كهربائي)">
+                        <input type="tel" id="contactPhone" placeholder="رقم الجوال" inputmode="tel">
+                    </div>
+                    <button onclick="addContact()">حفظ في دليل الاتصال</button>
 
-            <h3>⚠️ منطقة الإجراءات المتقدمة</h3>
-            <button class="archive-btn" style="background-color: var(--danger); width: 100%;" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية فقط (تبقى الملاحظات والمكتبة والدليل)</button>
+                    <h3 style="margin-top: 20px;">دليل الأرقام والجهات</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>المهنة</th>
+                                    <th>الهاتف</th>
+                                    <th>التواصل</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ------------------ التبويب الرابع: التقارير والتحليل ------------------ -->
+            <div id="tab-reports" class="tab-content">
+                <div class="section" style="border-right: 4px solid var(--info);">
+                    <h3>📈 حالة الميزانية ومعدل الاستهلاك</h3>
+                    <div id="statusAlert" class="alert-box"></div>
+
+                    <p style="margin-bottom: 5px; font-weight: bold; font-size: 0.85em;">نسبة المستهلك من الميزانية:</p>
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <div class="section" style="border-right: 4px solid var(--purple);">
+                    <h3>🏗️ توزيع المصروفات حسب المراحل</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>المرحلة</th>
+                                    <th>المبلغ المستهلك</th>
+                                    <th>النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stageReportTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section" style="border-right: 4px solid var(--danger);">
+                    <h3>🔥 أعلى 3 دفعات صُرفت</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>البيان</th>
+                                    <th>المرحلة</th>
+                                    <th>التاريخ</th>
+                                    <th>المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topExpensesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ------------------ التبويب الخامس: الملاحظات والمهام ------------------ -->
+            <div id="tab-notes" class="tab-content">
+                <div class="section" style="border-right: 4px solid var(--warning);">
+                    <h3>📝 إضافة ملاحظة جديدة / تذكير</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                        <input type="text" id="noteTitle" placeholder="عنوان الملاحظة">
+                        <textarea id="noteDetails" rows="3" placeholder="تفاصيل الملاحظة أو التعليمات..."></textarea>
+                        
+                        <div>
+                            <label class="upload-btn-label" style="background-color: var(--info); font-weight: normal; padding: 8px; display: block;">
+                                🖼️ إرفاق صورة مع الملاحظة
+                                <input type="file" id="noteImageInput" accept="image/*" style="display: none;" onchange="previewNoteImage(event)">
+                            </label>
+                            <span id="noteImageName" style="font-size: 0.75em; color: #666; margin-top:4px; display:block;">لم يتم اختيار صورة</span>
+                        </div>
+
+                        <button style="background-color: var(--warning);" onclick="addNote()">تثبيت الملاحظة</button>
+                    </div>
+
+                    <h3>سجل الملاحظات والمهام</h3>
+                    <div class="notes-grid" id="notesGrid"></div>
+                </div>
+            </div>
+
+            <!-- ------------------ التبويب السادس: الأرشيف وإدارة البيانات ------------------ -->
+            <div id="tab-archive" class="tab-content">
+                <div class="section" style="border-right: 4px solid var(--primary);">
+                    <h3>📂 حالة الأرشيف الشامل</h3>
+                    
+                    <div class="archive-indicator-box">
+                        <div style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--accent); font-size: 0.9em;">
+                            <span>🟢</span>
+                            <span>الحفظ التلقائي المحلي مفعل</span>
+                        </div>
+                        
+                        <div class="indicator-grid">
+                            <div class="indicator-card">
+                                <small>📁 مجلدات</small>
+                                <span id="indFolders">0</span>
+                            </div>
+                            <div class="indicator-card">
+                                <small>🖼️ ملفات</small>
+                                <span id="indLibrary">0</span>
+                            </div>
+                            <div class="indicator-card">
+                                <small>📝 ملاحظات</small>
+                                <span id="indNotes">0</span>
+                            </div>
+                            <div class="indicator-card">
+                                <small>📞 دليل</small>
+                                <span id="indContacts">0</span>
+                            </div>
+                            <div class="indicator-card">
+                                <small>💵 معاملات</small>
+                                <span id="indTransactions">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>💾 النسخ الاحتياطي واستعادة البيانات</h3>
+
+                    <div class="archive-box">
+                        <button class="archive-btn" style="background-color: var(--primary);" onclick="exportData()">💾 تحميل نسخة احتياطية (Backup)</button>
+                        <button class="archive-btn" style="background-color: var(--warning);" onclick="document.getElementById('importFile').click()">📂 استرجاع أرشيف سابق</button>
+                        <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
+                    </div>
+
+                    <hr style="border:0; border-top: 1px solid #eee; margin: 20px 0;">
+
+                    <h3>⚠️ إجراءات متقدمة</h3>
+                    <button class="archive-btn" style="background-color: var(--danger);" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية فقط</button>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
+
+    <!-- 📌 الفوتر السفلي الثابت -->
+    <footer class="app-footer">
+        نظام تتبع وتوثيق البناء © جميع الحقوق محفوظة | تصميم وتطوير: <span class="footer-engraved-text">ALI.N.HAKAMI</span>
+    </footer>
 
 </div>
-
-<!-- 🔻 شريط الحقوق السفلي بدون خلفية سوداء وبخط محفور أخضر -->
-<footer class="app-footer">
-    نظام تتبع وتوثيق البناء © جميع الحقوق محفوظة | تصميم وتطوير: <span class="footer-engraved-text">ALI.N.HAKAMI</span>
-</footer>
 
 <script>
     // تهيئة البيانات من الـ LocalStorage
@@ -1028,7 +1018,7 @@
 
         if (currentSelectedFolder) {
             btnBack.style.display = 'block';
-            pathLabel.innerText = `📂 المجلد الحالي: ${currentSelectedFolder}`;
+            pathLabel.innerText = `📂 المجلد: ${currentSelectedFolder}`;
             folderGrid.style.display = 'none';
         } else {
             btnBack.style.display = 'none';
@@ -1058,7 +1048,7 @@
             : library;
 
         if (docsToDisplay.length === 0) {
-            galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1;">لا توجد مستندات أو صور لعرضها هنا.</p>';
+            galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1; font-size:0.85em;">لا توجد مستندات أو صور هنا.</p>';
             return;
         }
 
@@ -1072,7 +1062,7 @@
                     <h4>${doc.title}</h4>
                     <p><b>المجلد:</b> ${doc.folder}</p>
                     <p><b>النوع:</b> ${doc.category}</p>
-                    <button class="btn-delete" style="margin-top:8px; width:100%;" onclick="deleteDoc(${actualIndex})">حذف الملف</button>
+                    <button class="btn-delete" style="margin-top:6px; width:100%;" onclick="deleteDoc(${actualIndex})">حذف الملف</button>
                 </div>
             `;
             galleryGrid.appendChild(card);
@@ -1154,8 +1144,8 @@
                 <td>${c.phone}</td>
                 <td>
                     <div class="action-btns">
-                        <a class="btn-call" href="tel:${cleanPhone}">📞 اتصال</a>
-                        <a class="btn-whatsapp" href="https://wa.me/${cleanPhone}" target="_blank">💬 واتساب</a>
+                        <a class="btn-call" href="tel:${cleanPhone}">📞</a>
+                        <a class="btn-whatsapp" href="https://wa.me/${cleanPhone}" target="_blank">💬</a>
                     </div>
                 </td>
                 <td><button class="btn-delete" onclick="deleteContact(${idx})">حذف</button></td>
@@ -1224,7 +1214,7 @@
                 </div>
                 <div>
                     <div class="note-date">🕒 ${n.date}</div>
-                    <button class="btn-delete" style="width:100%; margin-top:8px;" onclick="deleteNote(${idx})">حذف الملاحظة</button>
+                    <button class="btn-delete" style="width:100%; margin-top:6px;" onclick="deleteNote(${idx})">حذف الملاحظة</button>
                 </div>
             `;
             grid.appendChild(card);
