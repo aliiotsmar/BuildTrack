@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>نظام إدارة وتتبع البناء الشامل - ALI.N.HAKAMI</title>
+   
     <style>
         :root {
             --primary: #2c3e50;
@@ -327,8 +327,28 @@
             background: #eee;
         }
 
-        .media-info { padding: 8px; flex-grow: 1; }
-        .media-info h4 { margin: 0 0 4px 0; font-size: 0.85em; }
+        .doc-file-icon {
+            width: 100%;
+            height: 110px;
+            background: #eef2f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            color: var(--primary);
+        }
+
+        .doc-file-icon span {
+            font-size: 0.35em;
+            font-weight: bold;
+            margin-top: 4px;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .media-info { padding: 8px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .media-info h4 { margin: 0 0 4px 0; font-size: 0.85em; word-break: break-word; }
         .media-info p { margin: 0; font-size: 0.75em; color: #777; }
         
         .upload-options {
@@ -348,7 +368,7 @@
             font-size: 0.85em;
             font-weight: bold;
             flex: 1;
-            min-width: 140px;
+            min-width: 120px;
         }
 
         /* الملاحظات */
@@ -507,7 +527,7 @@
         </div>
     </header>
 
-    <!-- 📜 الجسم الرئيسي للمحتوى (القابل للتمرير الحقيقي) -->
+    <!-- 📜 الجسم الرئيسي للمحتوى -->
     <main class="app-body">
         <div class="container">
             
@@ -616,16 +636,24 @@
                             <option value="أخرى">مستند آخر</option>
                         </select>
                         <select id="docFolderSelect" style="border: 2px solid var(--warning); font-weight: bold;">
-                            <option value="" disabled selected>-- اختر المجلد المطلوبة (إجباري) --</option>
+                            <option value="" disabled selected>-- اختر المجلد المطلوب (إجباري) --</option>
                         </select>
                     </div>
 
                     <div class="upload-options">
+                        <!-- 📁 خيار رفع كافة أنواع الملفات -->
+                        <label class="upload-btn-label" style="background-color: var(--info);">
+                            📄 اختيار ملف/مستند
+                            <input type="file" id="fileDocument" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,image/*" style="display: none;" onchange="handleFileSelect(event)">
+                        </label>
+
+                        <!-- 🖼️ خيار اختيار صور فقط -->
                         <label class="upload-btn-label">
-                            📂 اختيار صورة/مستند
+                            🖼️ اختيار صورة
                             <input type="file" id="fileDevice" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
                         </label>
                         
+                        <!-- 📸 خيار التقاط بالسرعة -->
                         <label class="upload-btn-label" style="background-color: var(--purple);">
                             📸 التقاط بالكاميرا
                             <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
@@ -1052,17 +1080,38 @@
             return;
         }
 
-        docsToDisplay.forEach((doc, idx) => {
+        docsToDisplay.forEach((doc) => {
             const actualIndex = library.indexOf(doc);
             const card = document.createElement('div');
             card.className = 'media-card';
+            
+            const isImage = doc.fileType && doc.fileType.startsWith('image/');
+
+            let previewHTML = '';
+            if (isImage) {
+                previewHTML = `<img src="${doc.fileData}" alt="${doc.title}" onclick="window.open('${doc.fileData}')">`;
+            } else {
+                const ext = doc.fileName ? doc.fileName.split('.').pop().toUpperCase() : 'FILE';
+                previewHTML = `
+                    <div class="doc-file-icon">
+                        📄
+                        <span>${ext}</span>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
-                <img src="${doc.fileData}" alt="${doc.title}" onclick="window.open('${doc.fileData}')">
+                ${previewHTML}
                 <div class="media-info">
-                    <h4>${doc.title}</h4>
-                    <p><b>المجلد:</b> ${doc.folder}</p>
-                    <p><b>النوع:</b> ${doc.category}</p>
-                    <button class="btn-delete" style="margin-top:6px; width:100%;" onclick="deleteDoc(${actualIndex})">حذف الملف</button>
+                    <div>
+                        <h4>${doc.title}</h4>
+                        <p><b>المجلد:</b> ${doc.folder}</p>
+                        <p><b>النوع:</b> ${doc.category}</p>
+                    </div>
+                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+                        <button onclick="downloadOrOpenFile('${doc.fileData}', '${doc.fileName || 'document'}')" style="background-color: var(--info); padding: 5px; font-size: 0.78em;">👁️ فتح / تحميل</button>
+                        <button class="btn-delete" style="width:100%;" onclick="deleteDoc(${actualIndex})">حذف الملف</button>
+                    </div>
                 </div>
             `;
             galleryGrid.appendChild(card);
@@ -1075,7 +1124,7 @@
         const folder = document.getElementById('docFolderSelect').value;
 
         if (!title || !folder) {
-            alert('يرجى كتابة اسم المستند واختيار المجلد المخصص قبل تحميل الصورة.');
+            alert('يرجى كتابة اسم المستند واختيار المجلد المخصص قبل تحميل الملف.');
             event.target.value = '';
             return;
         }
@@ -1088,6 +1137,8 @@
                     title,
                     category,
                     folder,
+                    fileName: file.name,
+                    fileType: file.type,
                     fileData: e.target.result,
                     date: new Date().toLocaleDateString('ar-SA')
                 });
@@ -1096,6 +1147,18 @@
                 updateUI();
             };
             reader.readAsDataURL(file);
+        }
+    }
+
+    function downloadOrOpenFile(fileData, fileName) {
+        const win = window.open();
+        if (win) {
+            win.document.write(`<iframe src="${fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        } else {
+            const a = document.createElement('a');
+            a.href = fileData;
+            a.download = fileName;
+            a.click();
         }
     }
 
