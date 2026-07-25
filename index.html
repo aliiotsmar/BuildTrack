@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-   
+    <title>نظام إدارة وتتبع البناء الشامل - ALI.N.HAKAMI</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -36,6 +36,55 @@
             background-color: var(--bg);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-text-size-adjust: 100%;
+        }
+
+        /* 🔒 شاشة القفل والأمان */
+        #lockScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--primary);
+            color: white;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .lock-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .lock-card h2 {
+            margin-top: 0;
+            font-size: 1.3em;
+            color: #fff;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.5em;
+            text-align: center;
+            letter-spacing: 8px;
+            border-radius: 10px;
+            border: 2px solid var(--accent);
+            margin: 15px 0;
+            outline: none;
+            background: #fff;
+            color: #333;
         }
 
         /* 📱 الهيكل الرئيسي لتطبيقات الآيفون */
@@ -470,7 +519,7 @@
             border: 1px solid #ddd;
         }
 
-        .indicator-card small { font-size: 0.7em; }
+        .indicator-card small { font-size: 0.7e; }
         .indicator-card span { display: block; font-size: 1.05em; font-weight: bold; color: var(--primary); }
 
         .archive-box { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -510,6 +559,18 @@
 </head>
 <body>
 
+<!-- 🔒 شاشة القفل عند الدخول -->
+<div id="lockScreen" style="display: none;">
+    <div class="lock-card">
+        <div style="font-size: 3em; margin-bottom: 10px;">🔒</div>
+        <h2>مرحباً بك</h2>
+        <p style="font-size: 0.85em; opacity: 0.8;">أدخل رمز الأمان للدخول للنظام</p>
+        <input type="password" id="inputPin" class="pin-input" placeholder="••••" maxlength="8" inputmode="numeric">
+        <button onclick="unlockApp()" style="background: var(--accent); padding: 12px;">فتح النظام</button>
+        <p id="lockError" style="color: #ff6b6b; font-size: 0.8em; margin-top: 10px; display: none;">الرمز غير صحيح، حاول مجدداً</p>
+    </div>
+</div>
+
 <div class="app-shell">
 
     <!-- 📌 الهيدر الثابت علوياً -->
@@ -538,7 +599,7 @@
                 <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
                 <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
                 <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف والأمان</button>
             </div>
 
             <!-- ------------------ التبويب الأول: المالية والمصروفات ------------------ -->
@@ -775,8 +836,21 @@
                 </div>
             </div>
 
-            <!-- ------------------ التبويب السادس: الأرشيف وإدارة البيانات ------------------ -->
+            <!-- ------------------ التبويب السادس: الأرشيف وإدارة البيانات والأمان ------------------ -->
             <div id="tab-archive" class="tab-content">
+
+                <!-- 🔒 إعدادات الأمان وقفل التطبيق -->
+                <div class="section" style="border-right: 4px solid var(--purple);">
+                    <h3>🔐 إعدادات أمان التطبيق (رمز PIN)</h3>
+                    <p style="font-size: 0.82em; color: #666; margin-bottom: 10px;">احمِ بياناتك ومستنداتك برمز سري يمنع غيرك من الاطلاع عليها.</p>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="password" id="newPinInput" placeholder="أدخل رمز PIN جديد (4-8 أرقام)" maxlength="8" inputmode="numeric">
+                        <button onclick="setNewPin()" style="background-color: var(--purple);">🔑 حفظ / تغيير رمز الأمان</button>
+                        <button id="btnRemovePin" onclick="removePin()" style="background-color: var(--danger); display: none;">🔓 إلغاء تفعيل رمز الأمان</button>
+                    </div>
+                </div>
+
                 <div class="section" style="border-right: 4px solid var(--primary);">
                     <h3>📂 حالة الأرشيف الشامل</h3>
                     
@@ -843,16 +917,75 @@
     let folders = JSON.parse(localStorage.getItem('construction_folders')) || ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
     let notes = JSON.parse(localStorage.getItem('construction_notes')) || [];
     let contacts = JSON.parse(localStorage.getItem('construction_contacts')) || [];
+    let appPin = localStorage.getItem('construction_pin') || null;
 
     let currentSelectedFolder = null;
     let tempNoteImageBase64 = null;
 
-    // ضبط التواريخ التلقائية
+    // ضبط التواريخ والتأكد من القفل عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', () => {
+        checkSecurityLock();
         document.getElementById('itemDate').valueAsDate = new Date();
         document.getElementById('addDateInput').valueAsDate = new Date();
         updateUI();
     });
+
+    // 🔒 وظائف نمط الأمان والقفل
+    function checkSecurityLock() {
+        const lockScreen = document.getElementById('lockScreen');
+        if (appPin) {
+            lockScreen.style.display = 'flex';
+        } else {
+            lockScreen.style.display = 'none';
+        }
+        updatePinUI();
+    }
+
+    function unlockApp() {
+        const enteredPin = document.getElementById('inputPin').value;
+        const lockError = document.getElementById('lockError');
+
+        if (enteredPin === appPin) {
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('inputPin').value = '';
+            lockError.style.display = 'none';
+        } else {
+            lockError.style.display = 'block';
+            document.getElementById('inputPin').value = '';
+        }
+    }
+
+    function setNewPin() {
+        const pinInput = document.getElementById('newPinInput').value.trim();
+        if (pinInput.length < 4) {
+            alert('يرجى إدخال رمز أمان لا يقل عن 4 أرقام.');
+            return;
+        }
+
+        appPin = pinInput;
+        localStorage.setItem('construction_pin', appPin);
+        document.getElementById('newPinInput').value = '';
+        alert('🔒 تم تفعيل/تحديث رمز الأمان بنجاح!');
+        updatePinUI();
+    }
+
+    function removePin() {
+        if (confirm('هل أنت تأكد من إلغاء قفل الأمان والتطبيقات؟')) {
+            appPin = null;
+            localStorage.removeItem('construction_pin');
+            alert('🔓 تم إلغاء رمز الأمان بنجاح.');
+            updatePinUI();
+        }
+    }
+
+    function updatePinUI() {
+        const btnRemove = document.getElementById('btnRemovePin');
+        if (appPin) {
+            btnRemove.style.display = 'block';
+        } else {
+            btnRemove.style.display = 'none';
+        }
+    }
 
     // التنقل بين التبويبات
     function switchTab(evt, tabId) {
