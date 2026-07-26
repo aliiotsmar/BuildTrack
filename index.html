@@ -6,6 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>نظام إدارة وتتبع البناء الشامل - ALI.N.HAKAMI</title>
+    
+    <!-- 🌐 مكتبات Firebase السحابية -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --primary: #2c3e50;
@@ -26,128 +31,16 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 🔒 تثبيت الشاشة بالكامل لمنع اهتزاز Safari */
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* يمنع تمرير الصفحة بالكامل */
-            background-color: var(--bg);
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        /* 🔒 شاشة القفل والأمان */
-        #lockScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: var(--primary);
-            color: white;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .lock-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px 20px;
-            border-radius: 16px;
-            text-align: center;
-            width: 100%;
-            max-width: 320px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .lock-card h2 {
-            margin-top: 0;
-            font-size: 1.3em;
-            color: #fff;
-        }
-
-        .pin-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.5em;
-            text-align: center;
-            letter-spacing: 8px;
-            border-radius: 10px;
-            border: 2px solid var(--accent);
-            margin: 15px 0;
-            outline: none;
-            background: #fff;
-            color: #333;
-        }
-
-        /* 📱 الهيكل الرئيسي لتطبيقات الآيفون */
-        .app-shell {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-
-        /* 📌 الهيدر العلوي الثابت 100% */
-        .app-header {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--card-bg);
-            padding: calc(8px + env(safe-area-inset-top)) 15px 10px 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-bottom: 3px solid var(--accent);
-            z-index: 1000;
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .app-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid var(--accent);
-        }
-
-        .app-title-area h1 {
+            background-color: var(--bg);
             margin: 0;
-            color: var(--primary);
-            font-size: 1.05em;
-        }
-
-        .app-title-area p {
-            margin: 2px 0 0 0;
-            font-size: 0.72em;
-            color: #666;
-        }
-
-        /* 🏷️ توقيع المصمم المحفور */
-        .designer-text-engraved {
-            font-size: 0.78em;
-            font-weight: 800;
-            color: var(--engraved-green);
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.25);
-        }
-
-        /* 📜 محتوى التطبيق القابل للتمرير بسلاسة داخل الشاشة */
-        .app-body {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* تمرير سلس جداً للآيفون */
-            padding: 12px max(12px, env(safe-area-inset-right)) 20px max(12px, env(safe-area-inset-left));
+            padding-top: max(15px, env(safe-area-inset-top));
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+            padding-bottom: max(90px, calc(70px + env(safe-area-inset-bottom)));
+            color: #333;
+            -webkit-text-size-adjust: 100%;
         }
 
         .container {
@@ -155,7 +48,70 @@
             margin: 0 auto;
         }
 
-        /* 🔘 شريط التبويبات */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-title-area h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.15em;
+        }
+
+        .app-title-area p {
+            margin: 2px 0 0 0;
+            font-size: 0.78em;
+            color: #666;
+        }
+
+        .designer-text-engraved {
+            font-size: 0.82em;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--engraved-green);
+            background: transparent;
+            padding: 2px 0;
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.9), 
+                        -1px -1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .cloud-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #e8f8f0;
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
         .tabs-header {
             display: flex;
             gap: 6px;
@@ -167,9 +123,7 @@
             scrollbar-width: none;
         }
 
-        .tabs-header::-webkit-scrollbar {
-            display: none;
-        }
+        .tabs-header::-webkit-scrollbar { display: none; }
 
         .tab-btn {
             padding: 10px 14px;
@@ -190,15 +144,9 @@
             color: white;
         }
 
-        .tab-content {
-            display: none;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        /* كروت الإحصائيات */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -220,7 +168,6 @@
         .card.spent .amount { color: var(--danger); }
         .card.remaining .amount { color: var(--accent); }
 
-        /* النماذج والجداول */
         .section {
             background: var(--card-bg);
             padding: 15px;
@@ -243,7 +190,6 @@
             margin-bottom: 12px;
         }
 
-        /* حجم الخط 16px يمنع زوم الآيفون التلقائي */
         input, select, textarea, button {
             padding: 11px;
             border: 1px solid #ddd;
@@ -265,7 +211,6 @@
         }
 
         button:active { opacity: 0.8; }
-
         .btn-add-budget { background-color: var(--info); }
 
         .table-responsive {
@@ -295,6 +240,7 @@
             padding: 6px 10px;
             font-size: 0.8em;
             border-radius: 6px;
+            width: 100%;
         }
 
         .badge-income {
@@ -315,7 +261,6 @@
             font-size: 0.8em;
         }
 
-        /* المجلدات والمعرض */
         .folder-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -354,7 +299,7 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
             gap: 10px;
             margin-top: 10px;
         }
@@ -374,53 +319,47 @@
             height: 110px;
             object-fit: cover;
             background: #eee;
+            cursor: pointer;
         }
 
-        .doc-file-icon {
-            width: 100%;
+        .doc-icon-preview {
             height: 110px;
-            background: #eef2f7;
+            background: #eef6fc;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 2.2em;
-            color: var(--primary);
+            cursor: pointer;
+            border-bottom: 1px solid #e0e0e0;
+            transition: 0.2s;
         }
 
-        .doc-file-icon span {
-            font-size: 0.35em;
-            font-weight: bold;
-            margin-top: 4px;
-            color: #555;
-            text-transform: uppercase;
-        }
+        .doc-icon-preview:active { background: #d0e4f7; }
 
-        .media-info { padding: 8px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .media-info { padding: 8px; flex-grow: 1; }
         .media-info h4 { margin: 0 0 4px 0; font-size: 0.85em; word-break: break-word; }
         .media-info p { margin: 0; font-size: 0.75em; color: #777; }
         
         .upload-options {
             display: flex;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
         .upload-btn-label {
             background-color: var(--primary);
             color: white;
-            padding: 10px;
+            padding: 11px;
             border-radius: 8px;
             cursor: pointer;
             text-align: center;
-            font-size: 0.85em;
+            font-size: 0.88em;
             font-weight: bold;
             flex: 1;
-            min-width: 120px;
+            min-width: 140px;
         }
 
-        /* الملاحظات */
         .notes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -448,26 +387,37 @@
             border-radius: 6px;
             margin-bottom: 8px;
             border: 1px solid #ffe58f;
+            cursor: pointer;
         }
         .note-card .note-date { font-size: 0.72em; color: #999; }
 
-        /* أزرار الاتصال */
-        .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
-        .btn-call, .btn-whatsapp {
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .btn-call, .btn-whatsapp, .btn-share {
             color: white;
-            padding: 5px 8px;
+            padding: 6px 9px;
             border-radius: 6px;
             text-decoration: none;
-            font-size: 0.78em;
+            font-size: 0.85em;
             display: inline-flex;
             align-items: center;
-            gap: 2px;
+            justify-content: center;
             font-weight: bold;
+            border: none;
+            cursor: pointer;
+            width: auto;
+            box-sizing: border-box;
         }
+
         .btn-call { background-color: var(--info); }
         .btn-whatsapp { background-color: var(--whatsapp); }
+        .btn-share { background-color: var(--purple); }
 
-        /* شريط الميزانية */
         .progress-bar-container {
             width: 100%;
             background-color: #e0e0e0;
@@ -519,11 +469,28 @@
             border: 1px solid #ddd;
         }
 
-        .indicator-card small { font-size: 0.7e; }
-        .indicator-card span { display: block; font-size: 1.05em; font-weight: bold; color: var(--primary); }
+        .indicator-card small { font-size: 0.7em; }
 
-        .archive-box { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .archive-btn { padding: 11px; font-size: 0.88em; flex: 1; min-width: 100%; }
+        .indicator-card span {
+            display: block;
+            font-size: 1.05em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .archive-box {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .archive-btn {
+            padding: 11px;
+            font-size: 0.88em;
+            flex: 1;
+            min-width: 100%;
+        }
 
         .folder-nav-bar {
             display: flex;
@@ -535,18 +502,21 @@
             margin-bottom: 12px;
         }
 
-        /* 📌 الفوتر السفلي الثابت 100% */
         .app-footer {
-            flex-shrink: 0;
-            background: rgba(244, 247, 246, 0.96);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(244, 247, 246, 0.92);
             -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             color: #555;
             text-align: center;
             padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px;
             font-size: 0.78em;
-            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
             z-index: 1000;
+            border-top: 1px solid #e0e0e0;
         }
 
         .footer-engraved-text {
@@ -559,435 +529,495 @@
 </head>
 <body>
 
-<!-- 🔒 شاشة القفل عند الدخول -->
-<div id="lockScreen" style="display: none;">
-    <div class="lock-card">
-        <div style="font-size: 3em; margin-bottom: 10px;">🔒</div>
-        <h2>مرحباً بك</h2>
-        <p style="font-size: 0.85em; opacity: 0.8;">أدخل رمز الأمان للدخول للنظام</p>
-        <input type="password" id="inputPin" class="pin-input" placeholder="••••" maxlength="8" inputmode="numeric">
-        <button onclick="unlockApp()" style="background: var(--accent); padding: 12px;">فتح النظام</button>
-        <p id="lockError" style="color: #ff6b6b; font-size: 0.8em; margin-top: 10px; display: none;">الرمز غير صحيح، حاول مجدداً</p>
-    </div>
-</div>
-
-<div class="app-shell">
-
-    <!-- 📌 الهيدر الثابت علوياً -->
+<div class="container">
     <header class="app-header">
         <div class="header-brand">
             <img src="https://d.top4top.io/p_3857ra1to1.jpeg" alt="شعار البرنامج" class="app-logo">
             <div class="app-title-area">
                 <h1>نظام متابعة البناء الشامل</h1>
-                <p>إدارة المصروفات، المستندات، والأرشيف الهندسي</p>
+                <p>إدارة المصروفات، المستندات، والأرشيف الهندسي 
+                   <span class="cloud-badge">☁️ أحجام ملفات غير محدودة</span>
+                </p>
             </div>
         </div>
-        
-        <div class="designer-text-engraved">
-         
-        </div>
+        <div class="designer-text-engraved">تصميم وتطوير: ALI.N.HAKAMI</div>
     </header>
 
-    <!-- 📜 الجسم الرئيسي للمحتوى -->
-    <main class="app-body">
-        <div class="container">
-            
-            <!-- 🔘 أزرار التبويبات -->
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="switchTab(event, 'tab-finance')">💵 المصروفات</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات والصور</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف والأمان</button>
+    <div class="tabs-header">
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-finance')">💵 المصروفات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات والصور</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف</button>
+    </div>
+
+    <!-- التبويب الأول: المالية والمصروفات -->
+    <div id="tab-finance" class="tab-content active">
+        <div class="stats-grid">
+            <div class="card budget">
+                <h3>إجمالي التمويل</h3>
+                <div class="amount" id="displayBudget">0 ر.س</div>
             </div>
-
-            <!-- ------------------ التبويب الأول: المالية والمصروفات ------------------ -->
-            <div id="tab-finance" class="tab-content active">
-                <div class="stats-grid">
-                    <div class="card budget">
-                        <h3>إجمالي التمويل</h3>
-                        <div class="amount" id="displayBudget">0 ر.س</div>
-                    </div>
-                    <div class="card spent">
-                        <h3>المصروفات</h3>
-                        <div class="amount" id="displaySpent">0 ر.س</div>
-                    </div>
-                    <div class="card remaining">
-                        <h3>المتبقي</h3>
-                        <div class="amount" id="displayRemaining">0 ر.س</div>
-                    </div>
-                </div>
-
-                <div class="section" style="border-right: 4px solid var(--info);">
-                    <h3>➕ إضافة تمويل / زيادة الميزانية</h3>
-                    <div class="form-grid">
-                        <input type="number" id="addAmountInput" placeholder="المبلغ المضاف (ريال)" inputmode="decimal">
-                        <input type="text" id="addReasonInput" placeholder="المصدر (مثال: القرض العقاري)">
-                        <input type="date" id="addDateInput">
-                    </div>
-                    <button class="btn-add-budget" onclick="addIncome()">إضافة وإيداع المبلغ</button>
-                </div>
-
-                <div class="section" style="border-right: 4px solid var(--danger);">
-                    <h3>➖ تسجيل دفعة / مصروف جديد</h3>
-                    <div class="form-grid">
-                        <input type="text" id="itemName" placeholder="الوصف (مثلاً: دفعة التلييس)">
-                        <input type="number" id="itemAmount" placeholder="المبلغ (ريال)" inputmode="decimal">
-
-                        <select id="itemStage" onchange="toggleCustomStageInput()">
-                            <option value="" disabled selected>-- اختر المرحلة --</option>
-                            <option value="تأسيس ومستندات">تأسيس ومستندات</option>
-                            <option value="القواعد والأساسات">القواعد والأساسات</option>
-                            <option value="الدور الأرضي">الدور الأرضي</option>
-                            <option value="الدور الأول">الدور الأول</option>
-                            <option value="السطح والستارة">السطح والستارة</option>
-                            <option value="السباكة والكهرباء">السباكة والكهرباء</option>
-                            <option value="التلييس والترميم">التلييس والترميم</option>
-                            <option value="التشطيبات والبلاط">التشطيبات والبلاط</option>
-                            <option value="customStage">✍️ (مرحلة أخرى - كتابة يدوية)</option>
-                        </select>
-
-                        <input type="text" id="customStageInput" placeholder="اكتب اسم المرحلة..." style="display: none;">
-                        <input type="date" id="itemDate">
-                    </div>
-                    <button onclick="addExpense()">تسجيل المصروف</button>
-                </div>
-
-                <div class="section">
-                    <h3>📄 كشف حركة الحساب</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>التاريخ</th>
-                                    <th>النوع</th>
-                                    <th>البيان</th>
-                                    <th>المرحلة</th>
-                                    <th>المبلغ</th>
-                                    <th>إجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactionsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="card spent">
+                <h3>المصروفات</h3>
+                <div class="amount" id="displaySpent">0 ر.س</div>
             </div>
-
-            <!-- ------------------ التبويب الثاني: مكتبة الصور والمجلدات ------------------ -->
-            <div id="tab-library" class="tab-content">
-                <div class="section" style="border-right: 4px solid var(--warning);">
-                    <h3>📂 إدارة المجلدات والمستندات</h3>
-
-                    <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-direction: column;">
-                        <input type="text" id="newFolderName" placeholder="اسم المجلد الجديد (مثال: عقود، مخططات)">
-                        <button style="background-color: var(--warning);" onclick="createFolder()">➕ إنشاء مجلد</button>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
-
-                    <h3>📤 رفع مستند / صورة جديدة</h3>
-                    <div class="form-grid">
-                        <input type="text" id="docTitle" placeholder="اسم المستند (مثال: فاتورة صب الخرسانة)">
-                        <select id="docCategory">
-                            <option value="فاتورة">فاتورة / إيصال</option>
-                            <option value="مخطط">مخطط هندسي</option>
-                            <option value="صورة موقع">صورة من الموقع</option>
-                            <option value="عقد">عقد / اتفاقية</option>
-                            <option value="أخرى">مستند آخر</option>
-                        </select>
-                        <select id="docFolderSelect" style="border: 2px solid var(--warning); font-weight: bold;">
-                            <option value="" disabled selected>-- اختر المجلد المطلوب (إجباري) --</option>
-                        </select>
-                    </div>
-
-                    <div class="upload-options">
-                        <!-- 📁 خيار رفع كافة أنواع الملفات -->
-                        <label class="upload-btn-label" style="background-color: var(--info);">
-                            📄 اختيار ملف/مستند
-                            <input type="file" id="fileDocument" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,image/*" style="display: none;" onchange="handleFileSelect(event)">
-                        </label>
-
-                        <!-- 🖼️ خيار اختيار صور فقط -->
-                        <label class="upload-btn-label">
-                            🖼️ اختيار صورة
-                            <input type="file" id="fileDevice" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-                        </label>
-                        
-                        <!-- 📸 خيار التقاط بالسرعة -->
-                        <label class="upload-btn-label" style="background-color: var(--purple);">
-                            📸 التقاط بالكاميرا
-                            <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
-                        </label>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="folder-nav-bar">
-                        <div id="currentFolderPath" style="font-weight: bold; color: var(--primary); font-size: 0.95em;">
-                            📂 استعراض المجلدات
-                        </div>
-                        <button id="btnBackToFolders" style="display: none; background: var(--primary); padding: 5px 10px; font-size: 0.8em; width: auto;" onclick="openFolder(null)">⬅️ جميع المجلدات</button>
-                    </div>
-
-                    <div class="folder-grid" id="folderGrid"></div>
-
-                    <h3 id="galleryTitle" style="margin-top:15px; color:var(--primary); font-size: 1em;">📄 المستندات والصور</h3>
-                    <div class="gallery-grid" id="galleryGrid"></div>
-                </div>
+            <div class="card remaining">
+                <h3>المتبقي</h3>
+                <div class="amount" id="displayRemaining">0 ر.س</div>
             </div>
-
-            <!-- ------------------ التبويب الثالث: دليل الاتصال ------------------ -->
-            <div id="tab-contacts" class="tab-content">
-                <div class="section" style="border-right: 4px solid var(--accent);">
-                    <h3>📞 إضافة جهة اتصال جديدة</h3>
-                    <div class="form-grid">
-                        <input type="text" id="contactName" placeholder="الاسم / الشركة">
-                        <input type="text" id="contactRole" placeholder="المهنة (مثال: سباك، كهربائي)">
-                        <input type="tel" id="contactPhone" placeholder="رقم الجوال" inputmode="tel">
-                    </div>
-                    <button onclick="addContact()">حفظ في دليل الاتصال</button>
-
-                    <h3 style="margin-top: 20px;">دليل الأرقام والجهات</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الاسم</th>
-                                    <th>المهنة</th>
-                                    <th>الهاتف</th>
-                                    <th>التواصل</th>
-                                    <th>إجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="contactsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ------------------ التبويب الرابع: التقارير والتحليل ------------------ -->
-            <div id="tab-reports" class="tab-content">
-                <div class="section" style="border-right: 4px solid var(--info);">
-                    <h3>📈 حالة الميزانية ومعدل الاستهلاك</h3>
-                    <div id="statusAlert" class="alert-box"></div>
-
-                    <p style="margin-bottom: 5px; font-weight: bold; font-size: 0.85em;">نسبة المستهلك من الميزانية:</p>
-                    <div class="progress-bar-container">
-                        <div id="progressBar" class="progress-bar" style="width: 0%;">0%</div>
-                    </div>
-                </div>
-
-                <div class="section" style="border-right: 4px solid var(--purple);">
-                    <h3>🏗️ توزيع المصروفات حسب المراحل</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>المرحلة</th>
-                                    <th>المبلغ المستهلك</th>
-                                    <th>النسبة</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stageReportTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="section" style="border-right: 4px solid var(--danger);">
-                    <h3>🔥 أعلى 3 دفعات صُرفت</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>البيان</th>
-                                    <th>المرحلة</th>
-                                    <th>التاريخ</th>
-                                    <th>المبلغ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="topExpensesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ------------------ التبويب الخامس: الملاحظات والمهام ------------------ -->
-            <div id="tab-notes" class="tab-content">
-                <div class="section" style="border-right: 4px solid var(--warning);">
-                    <h3>📝 إضافة ملاحظة جديدة / تذكير</h3>
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-                        <input type="text" id="noteTitle" placeholder="عنوان الملاحظة">
-                        <textarea id="noteDetails" rows="3" placeholder="تفاصيل الملاحظة أو التعليمات..."></textarea>
-                        
-                        <div>
-                            <label class="upload-btn-label" style="background-color: var(--info); font-weight: normal; padding: 8px; display: block;">
-                                🖼️ إرفاق صورة مع الملاحظة
-                                <input type="file" id="noteImageInput" accept="image/*" style="display: none;" onchange="previewNoteImage(event)">
-                            </label>
-                            <span id="noteImageName" style="font-size: 0.75em; color: #666; margin-top:4px; display:block;">لم يتم اختيار صورة</span>
-                        </div>
-
-                        <button style="background-color: var(--warning);" onclick="addNote()">تثبيت الملاحظة</button>
-                    </div>
-
-                    <h3>سجل الملاحظات والمهام</h3>
-                    <div class="notes-grid" id="notesGrid"></div>
-                </div>
-            </div>
-
-            <!-- ------------------ التبويب السادس: الأرشيف وإدارة البيانات والأمان ------------------ -->
-            <div id="tab-archive" class="tab-content">
-
-                <!-- 🔒 إعدادات الأمان وقفل التطبيق -->
-                <div class="section" style="border-right: 4px solid var(--purple);">
-                    <h3>🔐 إعدادات أمان التطبيق (رمز PIN)</h3>
-                    <p style="font-size: 0.82em; color: #666; margin-bottom: 10px;">احمِ بياناتك ومستنداتك برمز سري يمنع غيرك من الاطلاع عليها.</p>
-
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <input type="password" id="newPinInput" placeholder="أدخل رمز PIN جديد (4-8 أرقام)" maxlength="8" inputmode="numeric">
-                        <button onclick="setNewPin()" style="background-color: var(--purple);">🔑 حفظ / تغيير رمز الأمان</button>
-                        <button id="btnRemovePin" onclick="removePin()" style="background-color: var(--danger); display: none;">🔓 إلغاء تفعيل رمز الأمان</button>
-                    </div>
-                </div>
-
-                <div class="section" style="border-right: 4px solid var(--primary);">
-                    <h3>📂 حالة الأرشيف الشامل</h3>
-                    
-                    <div class="archive-indicator-box">
-                        <div style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--accent); font-size: 0.9em;">
-                            <span>🟢</span>
-                            <span>الحفظ التلقائي المحلي مفعل</span>
-                        </div>
-                        
-                        <div class="indicator-grid">
-                            <div class="indicator-card">
-                                <small>📁 مجلدات</small>
-                                <span id="indFolders">0</span>
-                            </div>
-                            <div class="indicator-card">
-                                <small>🖼️ ملفات</small>
-                                <span id="indLibrary">0</span>
-                            </div>
-                            <div class="indicator-card">
-                                <small>📝 ملاحظات</small>
-                                <span id="indNotes">0</span>
-                            </div>
-                            <div class="indicator-card">
-                                <small>📞 دليل</small>
-                                <span id="indContacts">0</span>
-                            </div>
-                            <div class="indicator-card">
-                                <small>💵 معاملات</small>
-                                <span id="indTransactions">0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3>💾 النسخ الاحتياطي واستعادة البيانات</h3>
-
-                    <div class="archive-box">
-                        <button class="archive-btn" style="background-color: var(--primary);" onclick="exportData()">💾 تحميل نسخة احتياطية (Backup)</button>
-                        <button class="archive-btn" style="background-color: var(--warning);" onclick="document.getElementById('importFile').click()">📂 استرجاع أرشيف سابق</button>
-                        <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
-                    </div>
-
-                    <hr style="border:0; border-top: 1px solid #eee; margin: 20px 0;">
-
-                    <h3>⚠️ إجراءات متقدمة</h3>
-                    <button class="archive-btn" style="background-color: var(--danger);" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية فقط</button>
-                </div>
-            </div>
-
         </div>
-    </main>
 
-    <!-- 📌 الفوتر السفلي الثابت -->
-    <footer class="app-footer">
-        نظام تتبع وتوثيق البناء © جميع الحقوق محفوظة | تصميم وتطوير: <span class="footer-engraved-text">ALI.N.HAKAMI</span>
-    </footer>
+        <div class="section" style="border-right: 4px solid var(--info);">
+            <h3>➕ إضافة تمويل / زيادة الميزانية</h3>
+            <div class="form-grid">
+                <input type="number" id="addAmountInput" placeholder="المبلغ المضاف (ريال)" inputmode="decimal">
+                <input type="text" id="addReasonInput" placeholder="المصدر (مثال: القرض العقاري)">
+                <input type="date" id="addDateInput">
+            </div>
+            <button class="btn-add-budget" onclick="addIncome()">إضافة وإيداع المبلغ</button>
+        </div>
+
+        <div class="section" style="border-right: 4px solid var(--danger);">
+            <h3>➖ تسجيل دفعة / مصروف جديد</h3>
+            <div class="form-grid">
+                <input type="text" id="itemName" placeholder="الوصف (مثلاً: دفعة التلييس)">
+                <input type="number" id="itemAmount" placeholder="المبلغ (ريال)" inputmode="decimal">
+
+                <select id="itemStage" onchange="toggleCustomStageInput()">
+                    <option value="" disabled selected>-- اختر المرحلة --</option>
+                    <option value="تأسيس ومستندات">تأسيس ومستندات</option>
+                    <option value="القواعد والأساسات">القواعد والأساسات</option>
+                    <option value="الدور الأرضي">الدور الأرضي</option>
+                    <option value="الدور الأول">الدور الأول</option>
+                    <option value="السطح والستارة">السطح والستارة</option>
+                    <option value="السباكة والكهرباء">السباكة والكهرباء</option>
+                    <option value="التلييس والترميم">التلييس والترميم</option>
+                    <option value="التشطيبات والبلاط">التشطيبات والبلاط</option>
+                    <option value="customStage">✍️ (مرحلة أخرى - كتابة يدوية)</option>
+                </select>
+
+                <input type="text" id="customStageInput" placeholder="اكتب اسم المرحلة..." style="display: none;">
+                <input type="date" id="itemDate">
+            </div>
+            <button onclick="addExpense()">تسجيل المصروف</button>
+        </div>
+
+        <div class="section">
+            <h3>📄 كشف حركة الحساب</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>النوع</th>
+                            <th>البيان</th>
+                            <th>المرحلة</th>
+                            <th>المبلغ</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- التبويب الثاني: مكتبة المستندات (دعم أحجام مفتوحة) -->
+    <div id="tab-library" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--warning);">
+            <h3>📂 إدارة المجلدات والمستندات</h3>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-direction: column;">
+                <input type="text" id="newFolderName" placeholder="اسم المجلد الجديد (مثال: عقود، مخططات)">
+                <button style="background-color: var(--warning);" onclick="createFolder()">➕ إنشاء مجلد</button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
+
+            <h3>📤 رفع مستند / ملف (PDF, Word, Excel, ZIP, أوتوكاد, صور - حجم مفتوح)</h3>
+            
+            <div class="upload-options">
+                <label class="upload-btn-label">
+                    📁 1. اختيار ملف/مستند/صورة
+                    <input type="file" id="fileDevice" accept="*" style="display: none;" onchange="handleFileSelect(event)">
+                </label>
+                
+                <label class="upload-btn-label" style="background-color: var(--purple);">
+                    📸 التقاط بالكاميرا
+                    <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
+                </label>
+            </div>
+
+            <div id="selectedFileNotice" style="display:none; padding: 8px; border-radius: 6px; background: #eef6fc; color: var(--info); font-size: 0.85em; font-weight: bold; margin-bottom: 10px;"></div>
+
+            <div class="form-grid">
+                <input type="text" id="docTitle" placeholder="2. اسم المستند (يتعبأ تلقائياً عند الاختيار)">
+                
+                <select id="docCategory" onchange="toggleCustomCategoryInput()">
+                    <option value="فاتورة">فاتورة / إيصال</option>
+                    <option value="مخطط أوتوكاد">مخطط أوتوكاد (CAD)</option>
+                    <option value="مستند PDF">مستند PDF</option>
+                    <option value="جدول Excel / Word">مستند Word / Excel</option>
+                    <option value="ملف مضغوط ZIP">ملف مضغوط (ZIP/RAR)</option>
+                    <option value="صورة موقع">صورة من الموقع</option>
+                    <option value="عقد">عقد / اتفاقية</option>
+                    <option value="customCategory">✍️ (نوع آخر - كتابة يدوية)</option>
+                </select>
+
+                <input type="text" id="customCategoryInput" placeholder="اكتب نوع المستند..." style="display: none;">
+
+                <select id="docFolderSelect" style="border: 2px solid var(--warning); font-weight: bold;">
+                    <option value="" disabled selected>-- 3. اختر المجلد (إجباري) --</option>
+                </select>
+            </div>
+
+            <button id="btnSaveDoc" onclick="saveDocument()" style="display: none; background-color: var(--accent); margin-top: 5px;">💾 رفع وحفظ المستند سحابياً</button>
+        </div>
+
+        <div class="section">
+            <div class="folder-nav-bar">
+                <div id="currentFolderPath" style="font-weight: bold; color: var(--primary); font-size: 0.95em;">
+                    📂 استعراض المجلدات
+                </div>
+                <button id="btnBackToFolders" style="display: none; background: var(--primary); padding: 5px 10px; font-size: 0.8em; width: auto;" onclick="openFolder(null)">⬅️ جميع المجلدات</button>
+            </div>
+
+            <div class="folder-grid" id="folderGrid"></div>
+
+            <h3 id="galleryTitle" style="display:none; margin-top:15px; color:var(--primary); font-size: 1em;">📄 المستندات والصور</h3>
+            <div class="gallery-grid" id="galleryGrid" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- التبويب الثالث: دليل الاتصال -->
+    <div id="tab-contacts" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--accent);">
+            <h3>📞 إضافة جهة اتصال جديدة</h3>
+            <div class="form-grid">
+                <input type="text" id="contactName" placeholder="الاسم / الشركة">
+                <input type="text" id="contactRole" placeholder="المهنة (مثال: سباك، كهربائي)">
+                <input type="tel" id="contactPhone" placeholder="رقم الجوال" inputmode="tel">
+            </div>
+            <button onclick="addContact()">حفظ في دليل الاتصال</button>
+
+            <h3 style="margin-top: 20px;">دليل الأرقام والجهات</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>المهنة</th>
+                            <th>الهاتف</th>
+                            <th>التواصل والمشاركة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- التبويب الرابع: التقارير والتحليل -->
+    <div id="tab-reports" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--info);">
+            <h3>📈 حالة الميزانية ومعدل الاستهلاك</h3>
+            <div id="statusAlert" class="alert-box"></div>
+
+            <p style="margin-bottom: 5px; font-weight: bold; font-size: 0.85em;">نسبة المستهلك من الميزانية:</p>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <div class="section" style="border-right: 4px solid var(--purple);">
+            <h3>🏗️ توزيع المصروفات حسب المراحل</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المرحلة</th>
+                            <th>المبلغ المستهلك</th>
+                            <th>النسبة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stageReportTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section" style="border-right: 4px solid var(--danger);">
+            <h3>🔥 أعلى 3 دفعات صُرفت</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>البيان</th>
+                            <th>المرحلة</th>
+                            <th>التاريخ</th>
+                            <th>المبلغ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topExpensesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- التبويب الخامس: الملاحظات والمهام -->
+    <div id="tab-notes" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--warning);">
+            <h3>📝 إضافة ملاحظة جديدة / تذكير</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                <input type="text" id="noteTitle" placeholder="عنوان الملاحظة">
+                <textarea id="noteDetails" rows="3" placeholder="تفاصيل الملاحظة أو التعليمات..."></textarea>
+                
+                <div>
+                    <label class="upload-btn-label" style="background-color: var(--info); font-weight: normal; padding: 8px; display: block;">
+                        🖼️ إرفاق صورة مع الملاحظة
+                        <input type="file" id="noteImageInput" accept="image/*" style="display: none;" onchange="previewNoteImage(event)">
+                    </label>
+                    <span id="noteImageName" style="font-size: 0.75em; color: #666; margin-top:4px; display:block;">لم يتم اختيار صورة</span>
+                </div>
+
+                <button style="background-color: var(--warning);" onclick="addNote()">تثبيت الملاحظة</button>
+            </div>
+
+            <h3>سجل الملاحظات والمهام</h3>
+            <div class="notes-grid" id="notesGrid"></div>
+        </div>
+    </div>
+
+    <!-- التبويب السادس: الأرشيف وإدارة البيانات -->
+    <div id="tab-archive" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--primary);">
+            <h3>📂 حالة الأرشيف الشامل</h3>
+            
+            <div class="archive-indicator-box">
+                <div style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--accent); font-size: 0.9em;">
+                    <span>🟢</span>
+                    <span>تقنية التقسيم المفتوح للبيانات (Firestore Chunking) مفعلة</span>
+                </div>
+                
+                <div class="indicator-grid">
+                    <div class="indicator-card">
+                        <small>📁 مجلدات</small>
+                        <span id="indFolders">0</span>
+                    </div>
+                    <div class="indicator-card">
+                        <small>🖼️ ملفات</small>
+                        <span id="indLibrary">0</span>
+                    </div>
+                    <div class="indicator-card">
+                        <small>📝 ملاحظات</small>
+                        <span id="indNotes">0</span>
+                    </div>
+                    <div class="indicator-card">
+                        <small>📞 دليل</small>
+                        <span id="indContacts">0</span>
+                    </div>
+                    <div class="indicator-card">
+                        <small>💵 معاملات</small>
+                        <span id="indTransactions">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>💾 النسخ الاحتياطي واستعادة البيانات</h3>
+
+            <div class="archive-box">
+                <button class="archive-btn" style="background-color: var(--primary);" onclick="exportData()">💾 تحميل نسخة احتياطية (Backup)</button>
+                <button class="archive-btn" style="background-color: var(--warning);" onclick="document.getElementById('importFile').click()">📂 استرجاع أرشيف سابق للسحابة</button>
+                <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
+            </div>
+
+            <hr style="border:0; border-top: 1px solid #eee; margin: 20px 0;">
+
+            <h3>⚠️ إجراءات متقدمة</h3>
+            <button class="archive-btn" style="background-color: var(--danger);" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية فقط سحابياً</button>
+        </div>
+    </div>
 
 </div>
 
+<footer class="app-footer">
+    نظام تتبع وتوثيق البناء ©️ جميع الحقوق محفوظة | تصميم وتطوير: <span class="footer-engraved-text">ALI.N.HAKAMI</span>
+</footer>
+
 <script>
-    // تهيئة البيانات من الـ LocalStorage
-    let incomes = JSON.parse(localStorage.getItem('construction_incomes')) || [];
-    let expenses = JSON.parse(localStorage.getItem('construction_expenses')) || [];
-    let library = JSON.parse(localStorage.getItem('construction_library')) || [];
-    let folders = JSON.parse(localStorage.getItem('construction_folders')) || ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
-    let notes = JSON.parse(localStorage.getItem('construction_notes')) || [];
-    let contacts = JSON.parse(localStorage.getItem('construction_contacts')) || [];
-    let appPin = localStorage.getItem('construction_pin') || null;
+    // -------------------------------------------------------------
+    // 🔑 إعدادات ومفاتيح مشروع Firebase الخاص بك
+    // -------------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyC4wvynhsNGdwaftebV7aMHMeqNrW_c3ik",
+        authDomain: "buildtrack-5d9f9.firebaseapp.com",
+        projectId: "buildtrack-5d9f9",
+        storageBucket: "buildtrack-5d9f9.firebasestorage.app",
+        messagingSenderId: "177109619796",
+        appId: "1:177109619796:web:5cb23db7b9be4a2d5909c1",
+        measurementId: "G-T3BGBN1KC1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let incomes = [];
+    let expenses = [];
+    let library = [];
+    let folders = [];
+    let notes = [];
+    let contacts = [];
 
     let currentSelectedFolder = null;
-    let tempNoteImageBase64 = null;
+    let pendingDocFile = null;
+    let tempNoteFile = null;
 
-    // ضبط التواريخ والتأكد من القفل عند تحميل الصفحة
+    // -------------------------------------------------------------
+    // ☁️ المزامنة الفورية عبر مجموعات Firestore
+    // -------------------------------------------------------------
+    function setupRealtimeSync() {
+        // 1. المجلدات
+        db.collection("app_settings").doc("config").onSnapshot((doc) => {
+            if (doc.exists) {
+                folders = doc.data().folders || ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
+            } else {
+                folders = ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
+                db.collection("app_settings").doc("config").set({ folders });
+            }
+            renderFoldersAndLibrary();
+            renderArchiveIndicators();
+        });
+
+        // 2. المعاملات المالية
+        db.collection("transactions").onSnapshot((snapshot) => {
+            incomes = [];
+            expenses = [];
+            snapshot.forEach(doc => {
+                const item = { id: doc.id, ...doc.data() };
+                if (item.type === 'income') incomes.push(item);
+                if (item.type === 'expense') expenses.push(item);
+            });
+            updateFinancialUI();
+        });
+
+        // 3. الصور والمستندات (معلومات البيانات المرفوعة)
+        db.collection("library_items").onSnapshot((snapshot) => {
+            library = [];
+            snapshot.forEach(doc => {
+                library.push({ id: doc.id, ...doc.data() });
+            });
+            renderFoldersAndLibrary();
+            renderArchiveIndicators();
+        });
+
+        // 4. دليل الاتصال
+        db.collection("contacts_items").onSnapshot((snapshot) => {
+            contacts = [];
+            snapshot.forEach(doc => {
+                contacts.push({ id: doc.id, ...doc.data() });
+            });
+            renderContacts();
+            renderArchiveIndicators();
+        });
+
+        // 5. الملاحظات
+        db.collection("notes_items").onSnapshot((snapshot) => {
+            notes = [];
+            snapshot.forEach(doc => {
+                notes.push({ id: doc.id, ...doc.data() });
+            });
+            renderNotes();
+            renderArchiveIndicators();
+        });
+    }
+
+    function escapeHTML(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>'"]/g, 
+            tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag)
+        );
+    }
+
+    // 🛠️ ضغط الصور
+    function compressImage(file, callback) {
+        const maxWidth = 900;
+        const maxHeight = 900;
+        const quality = 0.65;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                callback(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = function() {
+                alert('حدث خطأ أثناء معالجة الصورة.');
+            };
+        };
+    }
+
+    function formatWhatsAppNumber(phone) {
+        let clean = phone.replace(/[^0-9]/g, '');
+        if (clean.startsWith('05')) {
+            clean = '966' + clean.substring(1);
+        }
+        return clean;
+    }
+
+    function executeShare(shareTitle, shareText) {
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText
+            }).catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert('📋 تم نسخ البيانات للحافظة بنجاح!');
+            }).catch(() => {
+                alert('عذراً، لم نتمكن من إتمام النسخ.');
+            });
+        } else {
+            alert('خاصية المشاركة غير مدعومة في متصفحك.');
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        checkSecurityLock();
         document.getElementById('itemDate').valueAsDate = new Date();
         document.getElementById('addDateInput').valueAsDate = new Date();
-        updateUI();
+        setupRealtimeSync();
     });
 
-    // 🔒 وظائف نمط الأمان والقفل
-    function checkSecurityLock() {
-        const lockScreen = document.getElementById('lockScreen');
-        if (appPin) {
-            lockScreen.style.display = 'flex';
-        } else {
-            lockScreen.style.display = 'none';
-        }
-        updatePinUI();
-    }
-
-    function unlockApp() {
-        const enteredPin = document.getElementById('inputPin').value;
-        const lockError = document.getElementById('lockError');
-
-        if (enteredPin === appPin) {
-            document.getElementById('lockScreen').style.display = 'none';
-            document.getElementById('inputPin').value = '';
-            lockError.style.display = 'none';
-        } else {
-            lockError.style.display = 'block';
-            document.getElementById('inputPin').value = '';
-        }
-    }
-
-    function setNewPin() {
-        const pinInput = document.getElementById('newPinInput').value.trim();
-        if (pinInput.length < 4) {
-            alert('يرجى إدخال رمز أمان لا يقل عن 4 أرقام.');
-            return;
-        }
-
-        appPin = pinInput;
-        localStorage.setItem('construction_pin', appPin);
-        document.getElementById('newPinInput').value = '';
-        alert('🔒 تم تفعيل/تحديث رمز الأمان بنجاح!');
-        updatePinUI();
-    }
-
-    function removePin() {
-        if (confirm('هل أنت تأكد من إلغاء قفل الأمان والتطبيقات؟')) {
-            appPin = null;
-            localStorage.removeItem('construction_pin');
-            alert('🔓 تم إلغاء رمز الأمان بنجاح.');
-            updatePinUI();
-        }
-    }
-
-    function updatePinUI() {
-        const btnRemove = document.getElementById('btnRemovePin');
-        if (appPin) {
-            btnRemove.style.display = 'block';
-        } else {
-            btnRemove.style.display = 'none';
-        }
-    }
-
-    // التنقل بين التبويبات
     function switchTab(evt, tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -996,14 +1026,19 @@
         if(evt) evt.currentTarget.classList.add('active');
     }
 
-    // إظهار وإخفاء حقل المرحلة المخصصة
     function toggleCustomStageInput() {
         const stageSelect = document.getElementById('itemStage');
         const customStageInput = document.getElementById('customStageInput');
         customStageInput.style.display = (stageSelect.value === 'customStage') ? 'block' : 'none';
     }
 
-    // إضافة تمويل جديد
+    function toggleCustomCategoryInput() {
+        const catSelect = document.getElementById('docCategory');
+        const customCatInput = document.getElementById('customCategoryInput');
+        customCatInput.style.display = (catSelect.value === 'customCategory') ? 'block' : 'none';
+    }
+
+    // 💰 التعاملات المالية
     function addIncome() {
         const amount = parseFloat(document.getElementById('addAmountInput').value);
         const reason = document.getElementById('addReasonInput').value.trim();
@@ -1014,13 +1049,18 @@
             return;
         }
 
-        incomes.push({ amount, source: reason, date });
+        db.collection("transactions").add({
+            type: 'income',
+            amount,
+            source: reason,
+            date,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
         document.getElementById('addAmountInput').value = '';
         document.getElementById('addReasonInput').value = '';
-        updateUI();
     }
 
-    // إضافة مصروف جديد
     function addExpense() {
         const name = document.getElementById('itemName').value.trim();
         const amount = parseFloat(document.getElementById('itemAmount').value);
@@ -1035,35 +1075,35 @@
             return;
         }
 
-        expenses.push({ name, amount, stage: finalStage, date });
+        db.collection("transactions").add({
+            type: 'expense',
+            name,
+            amount,
+            stage: finalStage,
+            date,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
         
         document.getElementById('itemName').value = '';
         document.getElementById('itemAmount').value = '';
         document.getElementById('itemStage').value = '';
         document.getElementById('customStageInput').value = '';
         toggleCustomStageInput();
-        
-        updateUI();
     }
 
-    // حذف إيداع
-    function deleteIncome(index) {
+    function deleteIncome(docId) {
         if (confirm('هل أنت تأكد من حذف هذا الإيداع؟')) {
-            incomes.splice(index, 1);
-            updateUI();
+            db.collection("transactions").doc(docId).delete();
         }
     }
 
-    // حذف مصروف
-    function deleteExpense(index) {
+    function deleteExpense(docId) {
         if (confirm('هل أنت تأكد من حذف هذا المصروف؟')) {
-            expenses.splice(index, 1);
-            updateUI();
+            db.collection("transactions").doc(docId).delete();
         }
     }
 
-    // تحديث الواجهة الرئيسية والحسابات
-    function updateUI() {
+    function updateFinancialUI() {
         const totalBudget = incomes.reduce((sum, item) => sum + item.amount, 0);
         const totalSpent = expenses.reduce((sum, item) => sum + item.amount, 0);
         const remaining = totalBudget - totalSpent;
@@ -1075,10 +1115,9 @@
         remainingEl.innerText = remaining.toLocaleString() + ' ر.س';
         remainingEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--accent)';
 
-        // جدول المعاملات
         let allTransactions = [
-            ...incomes.map((item, index) => ({ ...item, type: 'income', originalIndex: index })),
-            ...expenses.map((item, index) => ({ ...item, type: 'expense', originalIndex: index }))
+            ...incomes.map(item => ({ ...item, isIncome: true })),
+            ...expenses.map(item => ({ ...item, isIncome: false }))
         ];
 
         allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1088,43 +1127,31 @@
 
         allTransactions.forEach(trans => {
             const tr = document.createElement('tr');
-            const isIncome = trans.type === 'income';
-            const badge = isIncome 
+            const badge = trans.isIncome 
                 ? `<span class="badge-income">+ إيداع</span>` 
                 : `<span class="badge-expense">- مصروف</span>`;
             
-            const amountColor = isIncome ? 'var(--accent)' : 'var(--danger)';
-            const deleteFunc = isIncome ? `deleteIncome(${trans.originalIndex})` : `deleteExpense(${trans.originalIndex})`;
+            const amountColor = trans.isIncome ? 'var(--accent)' : 'var(--danger)';
+            const deleteFunc = trans.isIncome ? `deleteIncome('${trans.id}')` : `deleteExpense('${trans.id}')`;
 
             tr.innerHTML = `
-                <td>${trans.date}</td>
+                <td>${escapeHTML(trans.date)}</td>
                 <td>${badge}</td>
-                <td><b>${trans.name || trans.source}</b></td>
-                <td>${trans.stage || trans.source || '-'}</td>
+                <td><b>${escapeHTML(trans.name || trans.source)}</b></td>
+                <td>${escapeHTML(trans.stage || trans.source || '-')}</td>
                 <td style="color: ${amountColor}; font-weight: bold;">
-                    ${isIncome ? '+' : '-'}${trans.amount.toLocaleString()} ر.س
+                    ${trans.isIncome ? '+' : '-'}${trans.amount.toLocaleString()} ر.س
                 </td>
                 <td><button class="btn-delete" onclick="${deleteFunc}">حذف</button></td>
             `;
             tbody.appendChild(tr);
         });
 
-        renderFoldersAndLibrary();
-        renderNotes();
-        renderContacts();
         renderReports(totalBudget, totalSpent);
-        renderArchiveIndicators(allTransactions.length);
-
-        // حفظ في LocalStorage
-        localStorage.setItem('construction_incomes', JSON.stringify(incomes));
-        localStorage.setItem('construction_expenses', JSON.stringify(expenses));
-        localStorage.setItem('construction_library', JSON.stringify(library));
-        localStorage.setItem('construction_folders', JSON.stringify(folders));
-        localStorage.setItem('construction_notes', JSON.stringify(notes));
-        localStorage.setItem('construction_contacts', JSON.stringify(contacts));
+        renderArchiveIndicators();
     }
 
-    // إدارة المجلدات والمستندات
+    // 📂 المجلدات والمستندات
     function createFolder() {
         const input = document.getElementById('newFolderName');
         const name = input.value.trim();
@@ -1141,7 +1168,7 @@
 
         folders.push(name);
         input.value = '';
-        updateUI();
+        db.collection("app_settings").doc("config").set({ folders });
     }
 
     function deleteFolder(folderName, event) {
@@ -1156,7 +1183,7 @@
         if (confirm(`هل أنت تأكد من حذف المجلد "${folderName}"؟`)) {
             folders = folders.filter(f => f !== folderName);
             if (currentSelectedFolder === folderName) currentSelectedFolder = null;
-            updateUI();
+            db.collection("app_settings").doc("config").set({ folders });
         }
     }
 
@@ -1165,26 +1192,124 @@
         renderFoldersAndLibrary();
     }
 
+    // ⚡ دالة تجميع الأجزاء وفتح أو تنزيل المستندات كبيرة الحجم
+    async function openDocFile(docId) {
+        const doc = library.find(item => item.id === docId);
+        if (!doc) return;
+
+        let fullData = doc.fileData;
+
+        // إذا كان الملف مُشرحاً ومقسماً، نجمع أجزاءه سحابياً
+        if (doc.isChunked) {
+            const noticeEl = document.getElementById('selectedFileNotice');
+            try {
+                const chunksSnap = await db.collection("library_items").doc(docId).collection("chunks").orderBy("index").get();
+                let chunksArray = [];
+                chunksSnap.forEach(cDoc => {
+                    chunksArray.push(cDoc.data());
+                });
+                chunksArray.sort((a, b) => a.index - b.index);
+                fullData = chunksArray.map(c => c.data).join('');
+            } catch (err) {
+                alert("حدث خطأ أثناء جلب الملف من السحابة.");
+                return;
+            }
+        }
+
+        if (!fullData) {
+            alert("الملف غير متوفر.");
+            return;
+        }
+
+        if (fullData.startsWith('data:image/')) {
+            window.open(fullData);
+        } else {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = fullData;
+            downloadLink.download = doc.fileName || doc.title || 'document';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            downloadLink.remove();
+        }
+    }
+
     function renderFoldersAndLibrary() {
         const folderSelect = document.getElementById('docFolderSelect');
-        folderSelect.innerHTML = '<option value="" disabled selected>-- اختر المجلد المطلوب (إجباري) --</option>';
+        folderSelect.innerHTML = '<option value="" disabled selected>-- 3. اختر المجلد (إجباري) --</option>';
         folders.forEach(f => {
-            folderSelect.innerHTML += `<option value="${f}">${f}</option>`;
+            folderSelect.innerHTML += `<option value="${escapeHTML(f)}">${escapeHTML(f)}</option>`;
         });
 
         const folderGrid = document.getElementById('folderGrid');
         const btnBack = document.getElementById('btnBackToFolders');
         const pathLabel = document.getElementById('currentFolderPath');
+        const galleryTitle = document.getElementById('galleryTitle');
+        const galleryGrid = document.getElementById('galleryGrid');
+
         folderGrid.innerHTML = '';
+        galleryGrid.innerHTML = '';
 
         if (currentSelectedFolder) {
             btnBack.style.display = 'block';
             pathLabel.innerText = `📂 المجلد: ${currentSelectedFolder}`;
             folderGrid.style.display = 'none';
+
+            galleryTitle.style.display = 'block';
+            galleryTitle.innerText = `📄 المستندات والصور في (${currentSelectedFolder})`;
+            galleryGrid.style.display = 'grid';
+
+            const docsToDisplay = library.filter(doc => doc.folder === currentSelectedFolder);
+
+            if (docsToDisplay.length === 0) {
+                galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1; font-size:0.85em;">لا توجد مستندات أو صور داخل هذا المجلد.</p>';
+                return;
+            }
+
+            docsToDisplay.forEach((doc) => {
+                const isImage = doc.fileData && doc.fileData.startsWith('data:image/');
+                const card = document.createElement('div');
+                card.className = 'media-card';
+
+                let previewHTML = '';
+                if (isImage) {
+                    previewHTML = `<img src="${doc.fileData}" alt="${escapeHTML(doc.title)}" onclick="openDocFile('${doc.id}')">`;
+                } else {
+                    let icon = '📄';
+                    const catLower = (doc.category || '').toLowerCase();
+                    const titleLower = (doc.title || '').toLowerCase();
+
+                    if (catLower.includes('pdf') || titleLower.endsWith('.pdf')) icon = '📕';
+                    else if (catLower.includes('أوتوكاد') || catLower.includes('cad') || titleLower.endsWith('.dwg') || titleLower.endsWith('.dxf')) icon = '📐';
+                    else if (catLower.includes('zip') || catLower.includes('مضغوط') || titleLower.endsWith('.zip') || titleLower.endsWith('.rar')) icon = '📦';
+                    else if (catLower.includes('word') || catLower.includes('excel') || titleLower.endsWith('.doc') || titleLower.endsWith('.docx') || titleLower.endsWith('.xls') || titleLower.endsWith('.xlsx')) icon = '📊';
+
+                    previewHTML = `
+                        <div class="doc-icon-preview" onclick="openDocFile('${doc.id}')">
+                            <span style="font-size: 2.5em;">${icon}</span>
+                            <span style="font-size: 0.72em; color: var(--primary); font-weight: bold; margin-top: 4px;">اضغط للفتح / التنزيل</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${previewHTML}
+                    <div class="media-info">
+                        <h4>${escapeHTML(doc.title)}</h4>
+                        <p><b>المجلد:</b> ${escapeHTML(doc.folder)}</p>
+                        <p><b>النوع:</b> ${escapeHTML(doc.category)}</p>
+                        <button class="btn-delete" style="margin-top:6px; width:100%;" onclick="deleteDoc('${doc.id}')">حذف الملف</button>
+                    </div>
+                `;
+                galleryGrid.appendChild(card);
+            });
+
         } else {
             btnBack.style.display = 'none';
             pathLabel.innerText = '📂 جميع المجلدات';
             folderGrid.style.display = 'grid';
+
+            galleryTitle.style.display = 'none';
+            galleryGrid.style.display = 'none';
 
             folders.forEach(f => {
                 const count = library.filter(doc => doc.folder === f).length;
@@ -1192,117 +1317,131 @@
                 card.className = 'folder-card';
                 card.onclick = () => openFolder(f);
                 card.innerHTML = `
-                    <button class="folder-delete-btn" onclick="deleteFolder('${f}', event)">✕</button>
+                    <button class="folder-delete-btn" onclick="deleteFolder('${escapeHTML(f)}', event)">✕</button>
                     <div class="icon">📁</div>
-                    <h4>${f}</h4>
+                    <h4>${escapeHTML(f)}</h4>
                     <div class="count">${count} ملفات</div>
                 `;
                 folderGrid.appendChild(card);
             });
         }
-
-        const galleryGrid = document.getElementById('galleryGrid');
-        galleryGrid.innerHTML = '';
-
-        const docsToDisplay = currentSelectedFolder 
-            ? library.filter(doc => doc.folder === currentSelectedFolder)
-            : library;
-
-        if (docsToDisplay.length === 0) {
-            galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1; font-size:0.85em;">لا توجد مستندات أو صور هنا.</p>';
-            return;
-        }
-
-        docsToDisplay.forEach((doc) => {
-            const actualIndex = library.indexOf(doc);
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            
-            const isImage = doc.fileType && doc.fileType.startsWith('image/');
-
-            let previewHTML = '';
-            if (isImage) {
-                previewHTML = `<img src="${doc.fileData}" alt="${doc.title}" onclick="window.open('${doc.fileData}')">`;
-            } else {
-                const ext = doc.fileName ? doc.fileName.split('.').pop().toUpperCase() : 'FILE';
-                previewHTML = `
-                    <div class="doc-file-icon">
-                        📄
-                        <span>${ext}</span>
-                    </div>
-                `;
-            }
-
-            card.innerHTML = `
-                ${previewHTML}
-                <div class="media-info">
-                    <div>
-                        <h4>${doc.title}</h4>
-                        <p><b>المجلد:</b> ${doc.folder}</p>
-                        <p><b>النوع:</b> ${doc.category}</p>
-                    </div>
-                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
-                        <button onclick="downloadOrOpenFile('${doc.fileData}', '${doc.fileName || 'document'}')" style="background-color: var(--info); padding: 5px; font-size: 0.78em;">👁️ فتح / تحميل</button>
-                        <button class="btn-delete" style="width:100%;" onclick="deleteDoc(${actualIndex})">حذف الملف</button>
-                    </div>
-                </div>
-            `;
-            galleryGrid.appendChild(card);
-        });
     }
 
     function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        pendingDocFile = file;
+
+        const titleInput = document.getElementById('docTitle');
+        if (!titleInput.value.trim()) {
+            const fileNameOnly = file.name.replace(/\.[^/.]+$/, "");
+            titleInput.value = fileNameOnly;
+        }
+
+        const noticeEl = document.getElementById('selectedFileNotice');
+        noticeEl.style.display = 'block';
+        noticeEl.style.color = 'var(--accent)';
+        noticeEl.innerText = `✅ تم اختيار الملف (${file.name})! اختر المجلد واضغط زر الحفظ.`;
+        
+        document.getElementById('btnSaveDoc').style.display = 'block';
+    }
+
+    // ⚡ دالة الحفظ بتقنية التقسيم المفتوح للبيانات (Chunking Engine)
+    async function saveDocument() {
         const title = document.getElementById('docTitle').value.trim();
-        const category = document.getElementById('docCategory').value;
+        const categorySelect = document.getElementById('docCategory').value;
+        const customCategory = document.getElementById('customCategoryInput').value.trim();
         const folder = document.getElementById('docFolderSelect').value;
 
-        if (!title || !folder) {
-            alert('يرجى كتابة اسم المستند واختيار المجلد المخصص قبل تحميل الملف.');
-            event.target.value = '';
+        const finalCategory = categorySelect === 'customCategory' ? customCategory : categorySelect;
+
+        if (!pendingDocFile) {
+            alert('يرجى اختيار صورة أو مستند أولاً.');
             return;
         }
 
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                library.push({
+        if (!title || !finalCategory || !folder) {
+            alert('يرجى تعبئة جميع الحقول واختيار المجلد.');
+            return;
+        }
+
+        const noticeEl = document.getElementById('selectedFileNotice');
+        noticeEl.style.color = 'var(--info)';
+        noticeEl.innerText = '⏳ جاري تجهيز وتقسيم الملف للرفع السحابي المفتوح...';
+
+        const processAndSave = async (fileDataBase64) => {
+            try {
+                const CHUNK_SIZE = 400 * 1024; // تقسيم بدقة 400KB للأجزاء
+                const isLarge = fileDataBase64.length > CHUNK_SIZE;
+
+                // 1. إنشاء المستند الرئيسي للملف
+                const mainDocData = {
                     title,
-                    category,
+                    category: finalCategory,
                     folder,
-                    fileName: file.name,
-                    fileType: file.type,
-                    fileData: e.target.result,
-                    date: new Date().toLocaleDateString('ar-SA')
-                });
+                    fileName: pendingDocFile.name,
+                    isChunked: isLarge,
+                    fileData: isLarge ? (pendingDocFile.type.startsWith('image/') ? fileDataBase64.substring(0, 1000) : null) : fileDataBase64,
+                    date: new Date().toLocaleDateString('ar-SA'),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const docRef = await db.collection("library_items").add(mainDocData);
+
+                // 2. إذا كان الملف كبيراً، يتم رفع أجزائه في مجموعة فرعية (Subcollection)
+                if (isLarge) {
+                    const totalChunks = Math.ceil(fileDataBase64.length / CHUNK_SIZE);
+                    for (let i = 0; i < totalChunks; i++) {
+                        const chunkStr = fileDataBase64.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                        await docRef.collection("chunks").doc(i.toString()).set({
+                            index: i,
+                            data: chunkStr
+                        });
+                        noticeEl.innerText = `⏳ جاري رفع الأجزاء السحابية (${i + 1} من ${totalChunks})...`;
+                    }
+                }
+
+                currentSelectedFolder = folder;
+
+                pendingDocFile = null;
                 document.getElementById('docTitle').value = '';
-                event.target.value = '';
-                updateUI();
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+                document.getElementById('docCategory').value = 'فاتورة';
+                document.getElementById('customCategoryInput').value = '';
+                toggleCustomCategoryInput();
+                document.getElementById('docFolderSelect').value = '';
+                document.getElementById('selectedFileNotice').style.display = 'none';
+                document.getElementById('btnSaveDoc').style.display = 'none';
 
-    function downloadOrOpenFile(fileData, fileName) {
-        const win = window.open();
-        if (win) {
-            win.document.write(`<iframe src="${fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                alert('تم رفع وحفظ الملف سحابياً بنجاح بالتقسيم المفتوح!');
+            } catch (err) {
+                alert('حدث خطأ أثناء الحفظ السحابي: ' + err.message);
+            }
+        };
+
+        if (pendingDocFile.type.startsWith('image/')) {
+            compressImage(pendingDocFile, processAndSave);
         } else {
-            const a = document.createElement('a');
-            a.href = fileData;
-            a.download = fileName;
-            a.click();
+            const reader = new FileReader();
+            reader.readAsDataURL(pendingDocFile);
+            reader.onload = function(e) {
+                processAndSave(e.target.result);
+            };
         }
     }
 
-    function deleteDoc(index) {
+    async function deleteDoc(docId) {
         if (confirm('هل أنت تأكد من حذف هذا المستند؟')) {
-            library.splice(index, 1);
-            updateUI();
+            // حذف أجزاء الملف أولاً إن وجدت ثم الحذف الرئيسي
+            try {
+                const chunksSnap = await db.collection("library_items").doc(docId).collection("chunks").get();
+                chunksSnap.forEach(cDoc => cDoc.ref.delete());
+            } catch(e) {}
+            db.collection("library_items").doc(docId).delete();
         }
     }
 
-    // دليل الاتصالات
+    // 📞 دليل الهاتف
     function addContact() {
         const name = document.getElementById('contactName').value.trim();
         const role = document.getElementById('contactRole').value.trim();
@@ -1313,18 +1452,22 @@
             return;
         }
 
-        contacts.push({ name, role, phone });
+        db.collection("contacts_items").add({ name, role, phone });
         document.getElementById('contactName').value = '';
         document.getElementById('contactRole').value = '';
         document.getElementById('contactPhone').value = '';
-        updateUI();
     }
 
-    function deleteContact(index) {
+    function deleteContact(docId) {
         if (confirm('هل تريد حذف جهة الاتصال هذه؟')) {
-            contacts.splice(index, 1);
-            updateUI();
+            db.collection("contacts_items").doc(docId).delete();
         }
+    }
+
+    function shareContact(idx) {
+        const c = contacts[idx];
+        const text = `🎴 بطاقة اتصال:\n👤 الاسم: ${c.name}\n🛠️ المهنة: ${c.role || '-'}\n📞 الجوال: ${c.phone}`;
+        executeShare(`جهة اتصال: ${c.name}`, text);
     }
 
     function renderContacts() {
@@ -1332,34 +1475,33 @@
         tbody.innerHTML = '';
 
         contacts.forEach((c, idx) => {
-            const cleanPhone = c.phone.replace(/[^0-9+]/g, '');
+            const cleanPhoneCall = c.phone.replace(/[^0-9+]/g, '');
+            const cleanPhoneWa = formatWhatsAppNumber(c.phone);
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${c.name}</b></td>
-                <td>${c.role || '-'}</td>
-                <td>${c.phone}</td>
+                <td><b>${escapeHTML(c.name)}</b></td>
+                <td>${escapeHTML(c.role) || '-'}</td>
+                <td>${escapeHTML(c.phone)}</td>
                 <td>
                     <div class="action-btns">
-                        <a class="btn-call" href="tel:${cleanPhone}">📞</a>
-                        <a class="btn-whatsapp" href="https://wa.me/${cleanPhone}" target="_blank">💬</a>
+                        <a class="btn-call" href="tel:${cleanPhoneCall}" title="اتصال مباشر">📞</a>
+                        <a class="btn-whatsapp" href="https://wa.me/${cleanPhoneWa}" target="_blank" title="مراسلة واتساب">💬</a>
+                        <button class="btn-share" onclick="shareContact(${idx})" title="مشاركة جهة الاتصال">📤</button>
                     </div>
                 </td>
-                <td><button class="btn-delete" onclick="deleteContact(${idx})">حذف</button></td>
+                <td><button class="btn-delete" onclick="deleteContact('${c.id}')">حذف</button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // الملاحظات
+    // 📝 الملاحظات
     function previewNoteImage(e) {
         const file = e.target.files[0];
         if (file) {
+            tempNoteFile = file;
             document.getElementById('noteImageName').innerText = file.name;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                tempNoteImageBase64 = evt.target.result;
-            };
-            reader.readAsDataURL(file);
         }
     }
 
@@ -1372,27 +1514,48 @@
             return;
         }
 
-        notes.push({
-            title,
-            details,
-            image: tempNoteImageBase64,
-            date: new Date().toLocaleDateString('ar-SA')
-        });
+        if (tempNoteFile) {
+            compressImage(tempNoteFile, function(compressedBase64) {
+                db.collection("notes_items").add({
+                    title,
+                    details,
+                    image: compressedBase64,
+                    date: new Date().toLocaleDateString('ar-SA')
+                });
+                resetNoteForm();
+            });
+        } else {
+            db.collection("notes_items").add({
+                title,
+                details,
+                image: null,
+                date: new Date().toLocaleDateString('ar-SA')
+            });
+            resetNoteForm();
+        }
+    }
 
+    function resetNoteForm() {
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteDetails').value = '';
         document.getElementById('noteImageInput').value = '';
         document.getElementById('noteImageName').innerText = 'لم يتم اختيار صورة';
-        tempNoteImageBase64 = null;
-
-        updateUI();
+        tempNoteFile = null;
     }
 
-    function deleteNote(index) {
+    function deleteNote(docId) {
         if (confirm('هل تريد حذف هذه الملاحظة؟')) {
-            notes.splice(index, 1);
-            updateUI();
+            db.collection("notes_items").doc(docId).delete();
         }
+    }
+
+    function shareNote(idx) {
+        const n = notes[idx];
+        let text = `📝 ملاحظة مشروع البناء:\n📌 العنوان: ${n.title}\n🕒 التاريخ: ${n.date}`;
+        if (n.details) {
+            text += `\n\n📄 التفاصيل:\n${n.details}`;
+        }
+        executeShare(`ملاحظة: ${n.title}`, text);
     }
 
     function renderNotes() {
@@ -1404,20 +1567,22 @@
             card.className = 'note-card';
             card.innerHTML = `
                 <div>
-                    <h4>${n.title}</h4>
-                    <p>${n.details || ''}</p>
+                    <h4>${escapeHTML(n.title)}</h4>
+                    <p>${escapeHTML(n.details) || ''}</p>
                     ${n.image ? `<img src="${n.image}" onclick="window.open('${n.image}')">` : ''}
                 </div>
                 <div>
-                    <div class="note-date">🕒 ${n.date}</div>
-                    <button class="btn-delete" style="width:100%; margin-top:6px;" onclick="deleteNote(${idx})">حذف الملاحظة</button>
+                    <div class="note-date">🕒 ${escapeHTML(n.date)}</div>
+                    <div style="display:flex; gap:4px; margin-top:6px;">
+                        <button class="btn-share" style="flex:1;" onclick="shareNote(${idx})">📤 مشاركة</button>
+                        <button class="btn-delete" style="flex:1;" onclick="deleteNote('${n.id}')">حذف</button>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
         });
     }
 
-    // التقارير والتحليلات
     function renderReports(totalBudget, totalSpent) {
         const alertBox = document.getElementById('statusAlert');
         const progressBar = document.getElementById('progressBar');
@@ -1442,7 +1607,6 @@
             progressBar.style.backgroundColor = 'var(--accent)';
         }
 
-        // تقرير المراحل
         const stageTotals = {};
         expenses.forEach(e => {
             stageTotals[e.stage] = (stageTotals[e.stage] || 0) + e.amount;
@@ -1454,36 +1618,34 @@
             const stagePercent = totalSpent > 0 ? ((amount / totalSpent) * 100).toFixed(1) : 0;
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${stage}</b></td>
+                <td><b>${escapeHTML(stage)}</b></td>
                 <td>${amount.toLocaleString()} ر.س</td>
                 <td>${stagePercent}%</td>
             `;
             stageTbody.appendChild(tr);
         }
 
-        // أعلى 3 دفعات
         const topExpenses = [...expenses].sort((a, b) => b.amount - a.amount).slice(0, 3);
         const topTbody = document.getElementById('topExpensesTableBody');
         topTbody.innerHTML = '';
         topExpenses.forEach(e => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${e.name}</b></td>
-                <td>${e.stage}</td>
-                <td>${e.date}</td>
+                <td><b>${escapeHTML(e.name)}</b></td>
+                <td>${escapeHTML(e.stage)}</td>
+                <td>${escapeHTML(e.date)}</td>
                 <td style="color:var(--danger); font-weight:bold;">${e.amount.toLocaleString()} ر.س</td>
             `;
             topTbody.appendChild(tr);
         });
     }
 
-    // الأرشيف والبيانات
-    function renderArchiveIndicators(totalTrans) {
+    function renderArchiveIndicators() {
         document.getElementById('indFolders').innerText = folders.length;
         document.getElementById('indLibrary').innerText = library.length;
         document.getElementById('indNotes').innerText = notes.length;
         document.getElementById('indContacts').innerText = contacts.length;
-        document.getElementById('indTransactions').innerText = totalTrans;
+        document.getElementById('indTransactions').innerText = incomes.length + expenses.length;
     }
 
     function exportData() {
@@ -1514,15 +1676,14 @@
         reader.onload = function(event) {
             try {
                 const data = JSON.parse(event.target.result);
-                if (confirm('سيتم دمج البيانات الحالية واستبدال المستندات بأرشيف البيانات الجديد. هل تريد الاستمرار؟')) {
-                    incomes = data.incomes || [];
-                    expenses = data.expenses || [];
-                    library = data.library || [];
-                    folders = data.folders || [];
-                    notes = data.notes || [];
-                    contacts = data.contacts || [];
-                    updateUI();
-                    alert('تم استرجاع النسخة الاحتياطية بنجاح!');
+                if (confirm('سيتم رفع الأرشيف إلى السحابة بنجاح. هل تريد الاستمرار؟')) {
+                    if (data.folders) db.collection("app_settings").doc("config").set({ folders: data.folders });
+                    if (data.incomes) data.incomes.forEach(item => db.collection("transactions").add({ ...item, type: 'income' }));
+                    if (data.expenses) data.expenses.forEach(item => db.collection("transactions").add({ ...item, type: 'expense' }));
+                    if (data.library) data.library.forEach(item => db.collection("library_items").add(item));
+                    if (data.contacts) data.contacts.forEach(item => db.collection("contacts_items").add(item));
+                    if (data.notes) data.notes.forEach(item => db.collection("notes_items").add(item));
+                    alert('تم رفع الأرشيف للسحابة بنجاح!');
                 }
             } catch (err) {
                 alert('حدث خطأ أثناء قراءة الملف. تأكد من تحديد ملف JSON صحيح.');
@@ -1532,11 +1693,11 @@
     }
 
     function resetFinancialDataOnly() {
-        if (confirm('هل أنت متأكد من تصفير الحسابات المالية والإيداعات والمصروفات؟ (لن يتم حذف الملاحظات والمستندات والدليل)')) {
-            incomes = [];
-            expenses = [];
-            updateUI();
-            alert('تم تصفير البيانات المالية فقط.');
+        if (confirm('هل أنت متأكد من تصفير الحسابات المالية سحابياً؟')) {
+            db.collection("transactions").get().then(snapshot => {
+                snapshot.forEach(doc => doc.ref.delete());
+                alert('تم تصفير البيانات المالية سحابياً.');
+            });
         }
     }
 </script>
