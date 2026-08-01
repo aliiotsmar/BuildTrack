@@ -1355,7 +1355,6 @@
     // -------------------------------------------------------------
     const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8zI13piEgRuHCV-7EkgKtdiq0ZK1FxJD9oDvyLLdBKG109GyMbiJqgyyfbfVZuM02/exec';
 
-
     let incomes = [];
     let expenses = [];
     let library = [];
@@ -1435,7 +1434,7 @@
         });
     }
 
-    // 🔄 دالة ترحيل المجلدات والملفات القديمة إلى Google Drive (محدثة وشاملة للملفات المقطعة)
+    // 🔄 دالة ترحيل المجلدات والملفات القديمة إلى Google Drive
     async function migrateOldFilesToDrive() {
         if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
             alert("يرجى إدخال رابط Google Apps Script أولاً بداخل الكود.");
@@ -1509,10 +1508,8 @@
 
                     let fileObj = new File([fileBlob], docItem.fileName || docItem.title || "document", { type: fileBlob.type });
 
-                    // الرفع لـ Drive
                     const driveRes = await uploadFileToGoogleDriveDirect(fileObj, docItem.folder);
 
-                    // مسح أجزاء الحزم القديمة إن وجدت
                     if (docItem.isChunked) {
                         try {
                             const chunksSnap = await db.collection("library_items").doc(docItem.id).collection("chunks").get();
@@ -1520,7 +1517,6 @@
                         } catch(e) {}
                     }
 
-                    // تحديث الوثيقة وتفريغ مساحة Firebase
                     await db.collection("library_items").doc(docItem.id).update({
                         driveFileId: driveRes.fileId,
                         driveWebViewLink: driveRes.webViewLink,
@@ -2176,6 +2172,7 @@
         });
     }
 
+    // 🗑️ دالة حذف مجلد من التطبيق و Google Drive
     function deleteFolder(folderName, event) {
         event.stopPropagation();
         const count = library.filter(doc => doc.folder === folderName).length;
@@ -2185,9 +2182,25 @@
             return;
         }
 
-        if (confirm(`هل أنت تأكد من حذف المجلد "${folderName}"؟`)) {
-            db.collection("folders_items").doc(folderName).delete().then(() => {
+        if (confirm(`هل أنت متأكد من حذف المجلد "${folderName}"؟ سيتم حذفه من التطبيق ونقله لسلة المهملات في Google Drive.`)) {
+            db.collection("folders_items").doc(folderName).delete().then(async () => {
                 if (currentSelectedFolder === folderName) currentSelectedFolder = null;
+
+                if (GOOGLE_APPS_SCRIPT_URL && !GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
+                    try {
+                        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'deleteFolder',
+                                folderName: folderName
+                            })
+                        });
+                    } catch(e) {
+                        console.error("خطأ أثناء حذف المجلد من Drive:", e);
+                    }
+                }
             });
         }
     }
@@ -2456,8 +2469,33 @@
         }
     }
 
+    // 🗑️ دالة حذف مستند من التطبيق و Google Drive
     async function deleteDoc(docId) {
-        if (confirm('هل أنت تأكد من حذف هذا العنصر؟')) {
+        const doc = library.find(item => item.id === docId);
+        if (!doc) return;
+
+        if (confirm('هل أنت متأكد من حذف هذا العنصر؟ سيتم حذفه من التطبيق ونقله لسلة المهملات في Google Drive.')) {
+            if (doc.driveFileId && GOOGLE_APPS_SCRIPT_URL && !GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
+                try {
+                    await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'deleteFile',
+                            fileId: doc.driveFileId
+                        })
+                    });
+                } catch(e) {
+                    console.error("خطأ أثناء حذف الملف من Drive:", e);
+                }
+            }
+
+            try {
+                const chunksSnap = await db.collection("library_items").doc(docId).collection("chunks").get();
+                chunksSnap.forEach(cDoc => cDoc.ref.delete());
+            } catch(e) {}
+
             db.collection("library_items").doc(docId).delete();
         }
     }
