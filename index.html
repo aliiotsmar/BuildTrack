@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>نظام إدارة وتتبع البناء الشامل - ALI.N.HAKAMI</title>
-    
+    <title>نظام إدارة وتتبع البناء الشامل - BuildTrack</title>
+
     <!-- 🌐 مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -24,6 +24,9 @@
             --card-bg: #ffffff;
             --brand-color: #d35400;
             --engraved-green: #1e824c;
+            --build-blue: #4a6572;
+            --track-orange: #f39c12;
+            --drive-color: #1a73e8;
         }
 
         * {
@@ -48,18 +51,20 @@
             margin: 0 auto;
         }
 
+        /* 🎨 ترويسة البرنامج وشعار BuildTrack */
         .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--card-bg);
-            padding: 12px 15px;
+            background: #0d1117;
+            padding: 12px 18px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             margin-bottom: 15px;
             flex-wrap: wrap;
             gap: 10px;
-            border-bottom: 3px solid var(--accent);
+            border-bottom: 3px solid var(--track-orange);
+            color: #ffffff;
         }
 
         .header-brand {
@@ -68,45 +73,48 @@
             gap: 12px;
         }
 
-        .app-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid var(--accent);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .brand-logo-text {
+            font-size: 1.45em;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
         }
+
+        .brand-logo-text .build { color: #8ba2b5; }
+        .brand-logo-text .track { color: #f39c12; }
+        .brand-logo-text .tm { font-size: 0.45em; vertical-align: super; margin-right: 2px; color: #8ba2b5; }
 
         .app-title-area h1 {
             margin: 0;
-            color: var(--primary);
-            font-size: 1.15em;
+            color: #ffffff;
+            font-size: 1.1em;
         }
 
         .app-title-area p {
             margin: 2px 0 0 0;
-            font-size: 0.78em;
-            color: #666;
+            font-size: 0.76em;
+            color: #a0aec0;
         }
 
         .designer-text-engraved {
             font-size: 0.82em;
             font-weight: 800;
             letter-spacing: 0.5px;
-            color: var(--engraved-green);
+            color: #2ecc71;
             background: transparent;
             padding: 2px 0;
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.9), 
-                        -1px -1px 2px rgba(0, 0, 0, 0.25);
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.8);
         }
 
         .cloud-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #e8f8f0;
-            color: var(--accent);
-            padding: 4px 8px;
+            background: rgba(26, 115, 232, 0.2);
+            color: #64b5f6;
+            padding: 3px 8px;
             border-radius: 20px;
             font-size: 0.75em;
             font-weight: bold;
@@ -261,6 +269,15 @@
             font-size: 0.8em;
         }
 
+        .badge-unpaid {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
         .folder-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -339,7 +356,138 @@
         .media-info { padding: 8px; flex-grow: 1; }
         .media-info h4 { margin: 0 0 4px 0; font-size: 0.85em; word-break: break-word; }
         .media-info p { margin: 0; font-size: 0.75em; color: #777; }
-        
+
+        /* 🧮 حاسبة البناء */
+        .calc-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .calc-mode-selector {
+            display: flex;
+            gap: 8px;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .calc-mode-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .calc-mode-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calc-table-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 15px;
+        }
+
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 100%;
+        }
+
+        .calc-table th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 12px;
+            font-size: 0.88em;
+            text-align: right;
+        }
+
+        .calc-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+
+        .calc-table input {
+            padding: 8px 10px;
+            font-size: 0.9em;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+
+        .calc-table input:focus {
+            background: #ffffff;
+            border-color: var(--info);
+        }
+
+        .calc-row-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .calc-row-total {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 0.9em;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .calc-grand-box {
+            background: #0d1117;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            border-top: 3px solid var(--warning);
+        }
+
+        .calc-grand-box h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.5em;
+            color: #2ecc71;
+        }
+
+        .upload-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: #edf2f7;
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        .upload-type-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            font-size: 0.85em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .upload-type-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
         .upload-options {
             display: flex;
             gap: 8px;
@@ -502,6 +650,75 @@
             margin-bottom: 12px;
         }
 
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 850px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 0.95em;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            padding: 10px;
+            background: #2c3e5010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 6px;
+            background: #fff;
+        }
+
         .app-footer {
             position: fixed;
             bottom: 0;
@@ -525,6 +742,21 @@
             letter-spacing: 0.5px;
             text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.9), -1px -1px 1px rgba(0, 0, 0, 0.2);
         }
+
+        /* 📄 طباعة PDF */
+        @media print {
+            body { background: #ffffff !important; padding: 0 !important; color: #000 !important; }
+            .container > *:not(#tab-calculator) { display: none !important; }
+            #tab-calculator { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .calc-action-btns, .tabs-header, .app-footer, .app-header, .calc-mode-selector { display: none !important; }
+            .calc-wrapper { max-width: 100% !important; margin: 0 !important; }
+            .calc-table-card { border: 1px solid #000 !important; box-shadow: none !important; margin-bottom: 10px !important; }
+            .calc-table th { background: #f0f0f0 !important; color: #000 !important; border-bottom: 2px solid #000 !important; }
+            .calc-table td { border-bottom: 1px solid #ccc !important; }
+            .calc-table input { border: none !important; background: transparent !important; font-weight: bold; }
+            .calc-grand-box { background: #f8f9fa !important; color: #000 !important; border: 2px solid #000 !important; box-shadow: none !important; }
+            .calc-grand-box h2 { color: #000 !important; font-weight: 900; }
+        }
     </style>
 </head>
 <body>
@@ -532,24 +764,29 @@
 <div class="container">
     <header class="app-header">
         <div class="header-brand">
-            <img src="https://d.top4top.io/p_3857ra1to1.jpeg" alt="شعار البرنامج" class="app-logo">
+            <div class="brand-logo-text">
+                <span class="build">Build</span><span class="track">Track</span><span class="tm">TM</span>
+            </div>
             <div class="app-title-area">
                 <h1>نظام متابعة البناء الشامل</h1>
                 <p>إدارة المصروفات، المستندات، والأرشيف الهندسي 
-                   <span class="cloud-badge">☁️ أحجام ملفات غير محدودة</span>
+                   <span class="cloud-badge">⚡ Google Drive Mapped</span>
                 </p>
             </div>
         </div>
-        <div class="designer-text-engraved">تصميم وتطوير: ALI.N.HAKAMI</div>
+       
     </header>
 
+    <!-- 🔘 أزرار التبويبات -->
     <div class="tabs-header">
         <button class="tab-btn active" onclick="switchTab(event, 'tab-finance')">💵 المصروفات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات والصور</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-payments')" style="background-color: #e0f2fe; color: #0369a1;">💳 جدولة الدفعات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-library')">📑 المستندات (Google Drive)</button>
         <button class="tab-btn" onclick="switchTab(event, 'tab-contacts')">📞 دليل الاتصالات</button>
         <button class="tab-btn" onclick="switchTab(event, 'tab-reports')">📊 التقارير والإحصائيات</button>
         <button class="tab-btn" onclick="switchTab(event, 'tab-notes')">📝 الملاحظات</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-archive')" style="background-color: #d1ecf1; color: #0c5460;">📁 الأرشيف والترحيل</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-calculator')" style="background-color: #fef3c7; color: #92400e;">🧮 حاسبة البناء والمواد</button>
     </div>
 
     <!-- التبويب الأول: المالية والمصروفات -->
@@ -572,7 +809,7 @@
         <div class="section" style="border-right: 4px solid var(--info);">
             <h3>➕ إضافة تمويل / زيادة الميزانية</h3>
             <div class="form-grid">
-                <input type="number" id="addAmountInput" placeholder="المبلغ المضاف (ريال)" inputmode="decimal">
+                <input type="text" id="addAmountInput" placeholder="المبلغ المضاف (ريال)" inputmode="decimal">
                 <input type="text" id="addReasonInput" placeholder="المصدر (مثال: القرض العقاري)">
                 <input type="date" id="addDateInput">
             </div>
@@ -583,7 +820,7 @@
             <h3>➖ تسجيل دفعة / مصروف جديد</h3>
             <div class="form-grid">
                 <input type="text" id="itemName" placeholder="الوصف (مثلاً: دفعة التلييس)">
-                <input type="number" id="itemAmount" placeholder="المبلغ (ريال)" inputmode="decimal">
+                <input type="text" id="itemAmount" placeholder="المبلغ (ريال)" inputmode="decimal">
 
                 <select id="itemStage" onchange="toggleCustomStageInput()">
                     <option value="" disabled selected>-- اختر المرحلة --</option>
@@ -624,10 +861,81 @@
         </div>
     </div>
 
-    <!-- التبويب الثاني: مكتبة المستندات (دعم أحجام مفتوحة) -->
+    <!-- التبويب الثاني: جدولة الدفعات -->
+    <div id="tab-payments" class="tab-content">
+        <div class="stats-grid">
+            <div class="card budget">
+                <h3>إجمالي الدفعات</h3>
+                <div class="amount" id="payTotalAll">0 ر.س</div>
+            </div>
+            <div class="card remaining">
+                <h3>المدفوع</h3>
+                <div class="amount" id="payTotalPaid">0 ر.س</div>
+            </div>
+            <div class="card spent">
+                <h3>المتبقي (غير مدفوع)</h3>
+                <div class="amount" id="payTotalUnpaid">0 ر.س</div>
+            </div>
+        </div>
+
+        <div class="section" style="border-right: 4px solid var(--info);">
+            <h3>💳 إضافة وتسجيل دفعة جديدة</h3>
+            <div class="form-grid">
+                <input type="text" id="payTitleInput" placeholder="الدفعة / البيان (مثال: دفعة العظم الأولى)">
+                <input type="text" id="payAmountInput" placeholder="المبلغ (ريال)" inputmode="decimal">
+
+                <select id="payStageInput" onchange="togglePayCustomStage()">
+                    <option value="" disabled selected>-- اختر المرحلة --</option>
+                    <option value="تأسيس ومستندات">تأسيس ومستندات</option>
+                    <option value="القواعد والأساسات">القواعد والأساسات</option>
+                    <option value="الدور الأرضي">الدور الأرضي</option>
+                    <option value="الدور الأول">الدور الأول</option>
+                    <option value="السطح والستارة">السطح والستارة</option>
+                    <option value="السباكة والكهرباء">السباكة والكهرباء</option>
+                    <option value="التلييس والترميم">التلييس والترميم</option>
+                    <option value="التشطيبات والبلاط">التشطيبات والبلاط</option>
+                    <option value="customPayStage">✍️ (مرحلة أخرى - كتابة يدوية)</option>
+                </select>
+
+                <input type="text" id="payCustomStageInput" placeholder="اسم المرحلة..." style="display: none;">
+
+                <select id="payStatusInput">
+                    <option value="غير مدفوع" selected>🔴 غير مدفوع</option>
+                    <option value="مدفوع">🟢 مدفوع</option>
+                </select>
+
+                <input type="date" id="payDateInput">
+            </div>
+            <button style="background-color: var(--info);" onclick="addPayment()">تسجيل الدفعة في الجدول</button>
+        </div>
+
+        <div class="section">
+            <h3>📋 جدول متابعة وحالة الدفعات</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>الدفعة / البيان</th>
+                            <th>المرحلة</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>تغيير الحالة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- التبويب الثالث: مكتبة المستندات (Google Drive المباشر) -->
     <div id="tab-library" class="tab-content">
-        <div class="section" style="border-right: 4px solid var(--warning);">
-            <h3>📂 إدارة المجلدات والمستندات</h3>
+        <div class="section" style="border-right: 4px solid var(--drive-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <h3 style="margin:0;">📂 إدارة المجلدات والمستندات (Google Drive)</h3>
+            </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-direction: column;">
                 <input type="text" id="newFolderName" placeholder="اسم المجلد الجديد (مثال: عقود، مخططات)">
@@ -636,11 +944,16 @@
 
             <hr style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
 
-            <h3>📤 رفع مستند / ملف (PDF, Word, Excel, ZIP, أوتوكاد, صور - حجم مفتوح)</h3>
+            <h3>📤 إضافة مستند / صورة / رابط (مستودع Google Drive المباشر)</h3>
+
+            <div class="upload-type-selector">
+                <button type="button" class="upload-type-btn active" id="btnTypeFile" onclick="setUploadType('file')">📁 رفع ملف / صورة لـ Drive</button>
+                <button type="button" class="upload-type-btn" id="btnTypeLink" onclick="setUploadType('link')">🔗 إضافة رابط خارجي (URL)</button>
+            </div>
             
-            <div class="upload-options">
-                <label class="upload-btn-label">
-                    📁 1. اختيار ملف/مستند/صورة
+            <div class="upload-options" id="fileUploadContainer">
+                <label class="upload-btn-label" style="background-color: var(--drive-color);">
+                    📁 1. اختيار ملف لرفعه على Google Drive
                     <input type="file" id="fileDevice" accept="*" style="display: none;" onchange="handleFileSelect(event)">
                 </label>
                 
@@ -650,17 +963,22 @@
                 </label>
             </div>
 
+            <div id="linkUploadContainer" style="display: none; margin-bottom: 12px;">
+                <input type="url" id="docLinkUrl" placeholder="أدخل الرابط كاملاً (مثال: https://drive.google.com/...)" oninput="handleLinkInput()">
+            </div>
+
             <div id="selectedFileNotice" style="display:none; padding: 8px; border-radius: 6px; background: #eef6fc; color: var(--info); font-size: 0.85em; font-weight: bold; margin-bottom: 10px;"></div>
 
             <div class="form-grid">
-                <input type="text" id="docTitle" placeholder="2. اسم المستند (يتعبأ تلقائياً عند الاختيار)">
+                <input type="text" id="docTitle" placeholder="2. اسم المستند / الرابط">
                 
                 <select id="docCategory" onchange="toggleCustomCategoryInput()">
                     <option value="فاتورة">فاتورة / إيصال</option>
-                    <option value="مخطط أوتوكاد">مخطط أوتوكاد (CAD)</option>
                     <option value="مستند PDF">مستند PDF</option>
+                    <option value="مخطط أوتوكاد">مخطط أوتوكاد (CAD)</option>
                     <option value="جدول Excel / Word">مستند Word / Excel</option>
                     <option value="ملف مضغوط ZIP">ملف مضغوط (ZIP/RAR)</option>
+                    <option value="رابط خارجي">رابط موقع / Google Drive</option>
                     <option value="صورة موقع">صورة من الموقع</option>
                     <option value="عقد">عقد / اتفاقية</option>
                     <option value="customCategory">✍️ (نوع آخر - كتابة يدوية)</option>
@@ -673,7 +991,7 @@
                 </select>
             </div>
 
-            <button id="btnSaveDoc" onclick="saveDocument()" style="display: none; background-color: var(--accent); margin-top: 5px;">💾 رفع وحفظ المستند سحابياً</button>
+            <button id="btnSaveDoc" onclick="saveDocument()" style="display: none; background-color: var(--accent); margin-top: 5px;">💾 رفع وحفظ المستند في Google Drive</button>
         </div>
 
         <div class="section">
@@ -686,12 +1004,12 @@
 
             <div class="folder-grid" id="folderGrid"></div>
 
-            <h3 id="galleryTitle" style="display:none; margin-top:15px; color:var(--primary); font-size: 1em;">📄 المستندات والصور</h3>
+            <h3 id="galleryTitle" style="display:none; margin-top:15px; color:var(--primary); font-size: 1em;">📄 المستندات والصور والروابط المخزنة</h3>
             <div class="gallery-grid" id="galleryGrid" style="display:none;"></div>
         </div>
     </div>
 
-    <!-- التبويب الثالث: دليل الاتصال -->
+    <!-- التبويب الرابع: دليل الاتصال -->
     <div id="tab-contacts" class="tab-content">
         <div class="section" style="border-right: 4px solid var(--accent);">
             <h3>📞 إضافة جهة اتصال جديدة</h3>
@@ -720,7 +1038,7 @@
         </div>
     </div>
 
-    <!-- التبويب الرابع: التقارير والتحليل -->
+    <!-- التبويب الخامس: التقارير والتحليل -->
     <div id="tab-reports" class="tab-content">
         <div class="section" style="border-right: 4px solid var(--info);">
             <h3>📈 حالة الميزانية ومعدل الاستهلاك</h3>
@@ -766,7 +1084,7 @@
         </div>
     </div>
 
-    <!-- التبويب الخامس: الملاحظات والمهام -->
+    <!-- التبويب السادس: الملاحظات والمهام -->
     <div id="tab-notes" class="tab-content">
         <div class="section" style="border-right: 4px solid var(--warning);">
             <h3>📝 إضافة ملاحظة جديدة / تذكير</h3>
@@ -790,15 +1108,23 @@
         </div>
     </div>
 
-    <!-- التبويب السادس: الأرشيف وإدارة البيانات -->
+    <!-- التبويب السابع: الأرشيف وإدارة البيانات والترحيل -->
     <div id="tab-archive" class="tab-content">
+        <div class="section" style="border-right: 4px solid var(--drive-color);">
+            <h3>🔄 أداة ترحيل الأرشيف القديم إلى Google Drive</h3>
+            <p style="font-size: 0.85em; color: #555; margin-bottom: 10px;">اضغط هذا الزر لترحيل كافة المجلدات والملفات والصور القديمة (بما فيها أجزاء الملفات الكبيرة) إلى Google Drive وتفريغ المساحة:</p>
+            <button id="btnMigrateDrive" class="archive-btn" style="background-color: var(--drive-color);" onclick="migrateOldFilesToDrive()">
+                🔄 بدء ترحيل المجلدات والملفات القديمة إلى Google Drive
+            </button>
+        </div>
+
         <div class="section" style="border-right: 4px solid var(--primary);">
             <h3>📂 حالة الأرشيف الشامل</h3>
             
             <div class="archive-indicator-box">
                 <div style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--accent); font-size: 0.9em;">
                     <span>🟢</span>
-                    <span>تقنية التقسيم المفتوح للبيانات (Firestore Chunking) مفعلة</span>
+                    <span>النظام الهجين (Direct Google Apps Script) مفعل</span>
                 </div>
                 
                 <div class="indicator-grid">
@@ -807,7 +1133,7 @@
                         <span id="indFolders">0</span>
                     </div>
                     <div class="indicator-card">
-                        <small>🖼️ ملفات</small>
+                        <small>🖼️ ملفات ورروابط</small>
                         <span id="indLibrary">0</span>
                     </div>
                     <div class="indicator-card">
@@ -817,6 +1143,10 @@
                     <div class="indicator-card">
                         <small>📞 دليل</small>
                         <span id="indContacts">0</span>
+                    </div>
+                    <div class="indicator-card">
+                        <small>💳 دفعات</small>
+                        <span id="indPayments">0</span>
                     </div>
                     <div class="indicator-card">
                         <small>💵 معاملات</small>
@@ -836,10 +1166,167 @@
             <hr style="border:0; border-top: 1px solid #eee; margin: 20px 0;">
 
             <h3>⚠️ إجراءات متقدمة</h3>
-            <button class="archive-btn" style="background-color: var(--danger);" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية فقط سحابياً</button>
+            <button class="archive-btn" style="background-color: var(--danger);" onclick="resetFinancialDataOnly()">🔄 تصفير الحسابات المالية والدفعات سحابياً</button>
         </div>
     </div>
 
+    <!-- 🧮 التبويب الثامن والأخير: حاسبة البناء والمواد الأولية -->
+    <div id="tab-calculator" class="tab-content">
+        <div class="calc-wrapper">
+            <!-- 1. المصنعيات والمسطحات -->
+            <div class="section" style="border-right: 4px solid var(--warning);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: var(--primary);">🧮 1. حاسبة تكاليف المصنعيات / البنود</h3>
+                    <div class="calc-action-btns" style="display: flex; gap: 8px;">
+                        <button type="button" onclick="exportCalcPDF()" style="background-color: var(--info); padding: 8px 12px; font-size: 0.85em; width: auto;">📄 تصدير تقرير PDF</button>
+                        <button type="button" onclick="shareCalcReport()" style="background-color: var(--purple); padding: 8px 12px; font-size: 0.85em; width: auto;">📤 مشاركة التقرير</button>
+                    </div>
+                </div>
+
+                <div class="calc-table-card">
+                    <div class="table-responsive">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>البند</th>
+                                    <th style="width: 28%;">المساحة / الطول</th>
+                                    <th style="width: 28%;">سعر المتر (ر.س)</th>
+                                    <th style="text-align: left;">إجمالي البند</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="calc-row-title">🏢 1. الدور الأرضي</td>
+                                    <td><input type="text" id="qty_ground" placeholder="م²" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_ground" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_ground">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🏢 2. الدور الأول</td>
+                                    <td><input type="text" id="qty_first" placeholder="م²" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_first" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_first">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🏠 3. بيت الدرج / الملحق</td>
+                                    <td><input type="text" id="qty_stairs" placeholder="م²" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_stairs" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_stairs">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🧱 4. السور الخارجي</td>
+                                    <td><input type="text" id="qty_fence" placeholder="متر طولي" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_fence" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_fence">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🛡️ 5. ستارة السطح</td>
+                                    <td><input type="text" id="qty_parapet" placeholder="متر طولي" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_parapet" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_parapet">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">💧 6. الخزان الأرضي</td>
+                                    <td><input type="text" id="qty_tank" placeholder="المساحة/السعة" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_tank" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_tank">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🕳️ 7. البيارة / الصرف</td>
+                                    <td><input type="text" id="qty_septic" placeholder="المساحة/السعة" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td><input type="text" id="price_septic" placeholder="السعر" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="tot_septic">0 ر.س</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. حاسبة كميات وتكاليف المواد الأولية -->
+            <div class="section" style="border-right: 4px solid var(--accent);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <h3 style="margin:0; color: var(--primary);">🏗️ 2. حاسبة كميات وتكاليف المواد الأولية</h3>
+                </div>
+
+                <div class="calc-mode-selector">
+                    <button type="button" class="calc-mode-btn active" id="btnMatModeAuto" onclick="setMaterialInputMode('auto')">🤖 التقدير التلقائي (من المساحات)</button>
+                    <button type="button" class="calc-mode-btn" id="btnMatModeManual" onclick="setMaterialInputMode('manual')">✍️ الإدخال المباشر للكميات (B.O.Q)</button>
+                </div>
+
+                <div class="calc-table-card">
+                    <div class="table-responsive">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+                                    <th>المادة الأولية</th>
+                                    <th style="width: 32%;">الكمية المطلوبة</th>
+                                    <th style="width: 28%;">سعر الوحدة (ر.س)</th>
+                                    <th style="text-align: left;">إجمالي المادة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="calc-row-title">🏗️ الخرسانة المسلحة (م³)</td>
+                                    <td id="cell_qty_concrete"><b id="mat_qty_concrete">0</b> م³</td>
+                                    <td><input type="text" id="rate_concrete" value="220" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="mat_tot_concrete">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">⛓️ حديد التسليح (طن)</td>
+                                    <td id="cell_qty_steel"><b id="mat_qty_steel">0</b> طن</td>
+                                    <td><input type="text" id="rate_steel" value="2800" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="mat_tot_steel">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🧱 البلوك / الطابوق (حبة)</td>
+                                    <td id="cell_qty_blocks"><b id="mat_qty_blocks">0</b> حبة</td>
+                                    <td><input type="text" id="rate_blocks" value="1.8" placeholder="سعر الحبة" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="mat_tot_blocks">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">📦 الأسمنت (كيس)</td>
+                                    <td id="cell_qty_cement"><b id="mat_qty_cement">0</b> كيس</td>
+                                    <td><input type="text" id="rate_cement" value="15" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="mat_tot_cement">0 ر.س</td>
+                                </tr>
+                                <tr>
+                                    <td class="calc-row-title">🏜️ البطحاء / الرمل (م³)</td>
+                                    <td id="cell_qty_sand"><b id="mat_qty_sand">0</b> م³</td>
+                                    <td><input type="text" id="rate_sand" value="45" oninput="calcConstructionCost()" inputmode="decimal"></td>
+                                    <td class="calc-row-total" id="mat_tot_sand">0 ر.س</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="calc-grand-box">
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; font-size: 0.88em; border-bottom: 1px solid #333; padding-bottom: 8px;">
+                        <span>إجمالي المصنعيات: <b id="subTotalLabor" style="color:#38bdf8;">0 ر.س</b></span>
+                        <span>إجمالي المواد الأولية: <b id="subTotalMaterials" style="color:#facc15;">0 ر.س</b></span>
+                    </div>
+                    <span style="font-size: 0.9em; opacity: 0.9;">💰 الإجمالي الكلي المجمع (مصنعيات + مواد أولية)</span>
+                    <h2 id="calcGrandTotal">0 ر.س</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 🖼️ النافذة المنبثقة للمعاينة -->
+<div id="previewModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">معاينة المستند</h3>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a id="modalDownloadBtn" class="btn-call" style="background: var(--accent); text-decoration: none;" target="_blank">📥 فتح / تحميل من Drive</a>
+                <button type="button" onclick="closePreviewModal()" style="background: var(--danger); width: auto; padding: 6px 12px; font-size: 0.85em;">✕ إغلاق</button>
+            </div>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+    </div>
 </div>
 
 <footer class="app-footer">
@@ -848,7 +1335,7 @@
 
 <script>
     // -------------------------------------------------------------
-    // 🔑 إعدادات ومفاتيح مشروع Firebase الخاص بك
+    // 🔑 1. إعدادات ومفاتيح مشروع Firebase الخاص بك
     // -------------------------------------------------------------
     const firebaseConfig = {
         apiKey: "AIzaSyC4wvynhsNGdwaftebV7aMHMeqNrW_c3ik",
@@ -863,34 +1350,238 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // -------------------------------------------------------------
+    // 🔑 2. رابط Google Apps Script المباشر (ضع رابط Web App الخاص بك هنا)
+    // -------------------------------------------------------------
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8zI13piEgRuHCV-7EkgKtdiq0ZK1FxJD9oDvyLLdBKG109GyMbiJqgyyfbfVZuM02/exec';
+
+
     let incomes = [];
     let expenses = [];
     let library = [];
     let folders = [];
     let notes = [];
     let contacts = [];
+    let payments = [];
 
     let currentSelectedFolder = null;
     let pendingDocFile = null;
     let tempNoteFile = null;
+    let currentUploadMode = 'file';
+    let materialInputMode = 'auto';
+
+    function parseNum(val) {
+        if (!val) return 0;
+        let str = val.toString().replace(/,/g, '.').replace(/،/g, '.');
+        return parseFloat(str) || 0;
+    }
+
+    function dataURLtoBlob(dataurl) {
+        try {
+            let arr = dataurl.split(',');
+            let mimeMatch = arr[0].match(/:(.*?);/);
+            let mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+            let bstr = atob(arr[1]);
+            let n = bstr.length;
+            let u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type: mime});
+        } catch(e) {
+            console.error("خطأ تحويل البيانات إلى Blob:", e);
+            return null;
+        }
+    }
+
+    // ⚡ دالة الرفع المباشر لـ Google Drive مع توجيه المجلد الفرعي
+    async function uploadFileToGoogleDriveDirect(file, subFolder) {
+        if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
+            throw new Error("يرجى استبدال نص GOOGLE_APPS_SCRIPT_URL بالرابط الحقيقي بداخل ملف HTML.");
+        }
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function(e) {
+                const payload = {
+                    fileName: file.name,
+                    mimeType: file.type,
+                    fileData: e.target.result,
+                    subFolder: subFolder || ''
+                };
+
+                try {
+                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        redirect: 'follow',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const resData = await response.json();
+                    if (resData.status === 'success') {
+                        resolve(resData);
+                    } else {
+                        reject(new Error(resData.message || "حدث خطأ في السكربت أثناء معالجة الملف"));
+                    }
+                } catch(err) {
+                    reject(err);
+                }
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    }
+
+    // 🔄 دالة ترحيل المجلدات والملفات القديمة إلى Google Drive (محدثة وشاملة للملفات المقطعة)
+    async function migrateOldFilesToDrive() {
+        if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
+            alert("يرجى إدخال رابط Google Apps Script أولاً بداخل الكود.");
+            return;
+        }
+
+        if (!confirm("هل تريد بدء ترحيل كافة المجلدات والملفات القديمة من Firebase إلى Google Drive؟")) {
+            return;
+        }
+
+        const btn = document.getElementById('btnMigrateDrive');
+        const originalText = btn ? btn.innerText : "";
+        if (btn) btn.disabled = true;
+
+        try {
+            // 1. ترحيل وتأكيد إنشاء المجلدات في Google Drive
+            alert("⏳ الخطوة 1/2: جاري إنشاء وتجهيز المجلدات في Google Drive...");
+            for (const folderName of folders) {
+                await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'createFolder',
+                        folderName: folderName
+                    })
+                });
+            }
+
+            // 2. تصفية المستندات التي لم تُرَفَّع إلى Drive بعد
+            const oldDocs = library.filter(doc => !doc.isLink && !doc.driveWebViewLink);
+            
+            if (oldDocs.length === 0) {
+                alert("✅ جميع المجلدات جاهزة، ولا توجد ملفات قديمة تحتاج للترحيل!");
+                if (btn) btn.disabled = false;
+                return;
+            }
+
+            let successCount = 0;
+            let failCount = 0;
+            let failedFileNames = [];
+
+            for (let i = 0; i < oldDocs.length; i++) {
+                const docItem = oldDocs[i];
+                if (btn) btn.innerText = `⏳ جاري ترحيل (${i + 1} من ${oldDocs.length}): ${docItem.title}`;
+
+                try {
+                    let fullDataBase64 = docItem.fileData;
+
+                    // 🛑 معالجة إعادة تجميع الملفات المقطعة القديمة (Chunked Files)
+                    if (docItem.isChunked) {
+                        const chunksSnap = await db.collection("library_items").doc(docItem.id).collection("chunks").orderBy("index").get();
+                        let chunksArray = [];
+                        chunksSnap.forEach(cDoc => chunksArray.push(cDoc.data()));
+                        chunksArray.sort((a, b) => a.index - b.index);
+                        fullDataBase64 = chunksArray.map(c => c.data).join('');
+                    }
+
+                    if (!fullDataBase64) {
+                        failCount++;
+                        failedFileNames.push(docItem.title + " (بيانات فارغة)");
+                        continue;
+                    }
+
+                    let fileBlob = dataURLtoBlob(fullDataBase64);
+                    if (!fileBlob) {
+                        failCount++;
+                        failedFileNames.push(docItem.title + " (خطأ ترميز)");
+                        continue;
+                    }
+
+                    let fileObj = new File([fileBlob], docItem.fileName || docItem.title || "document", { type: fileBlob.type });
+
+                    // الرفع لـ Drive
+                    const driveRes = await uploadFileToGoogleDriveDirect(fileObj, docItem.folder);
+
+                    // مسح أجزاء الحزم القديمة إن وجدت
+                    if (docItem.isChunked) {
+                        try {
+                            const chunksSnap = await db.collection("library_items").doc(docItem.id).collection("chunks").get();
+                            chunksSnap.forEach(cDoc => cDoc.ref.delete());
+                        } catch(e) {}
+                    }
+
+                    // تحديث الوثيقة وتفريغ مساحة Firebase
+                    await db.collection("library_items").doc(docItem.id).update({
+                        driveFileId: driveRes.fileId,
+                        driveWebViewLink: driveRes.webViewLink,
+                        fileData: firebase.firestore.FieldValue.delete(),
+                        isChunked: false
+                    });
+
+                    successCount++;
+                } catch (err) {
+                    console.error(`خطأ أثناء ترحيل الملف ${docItem.title}:`, err);
+                    failCount++;
+                    failedFileNames.push(docItem.title);
+                }
+            }
+
+            let resultMsg = `🎉 اكتملت أداة الترحيل!\n\n✅ تم ترحيل بنجاح: ${successCount} ملف\n`;
+            if (failCount > 0) {
+                resultMsg += `⚠️ تعذر ترحيل: ${failCount} ملف\n(الملفات المتعثرة: ${failedFileNames.join(', ')})`;
+            }
+            alert(resultMsg);
+
+        } catch (err) {
+            alert("حدث خطأ أثناء عملية الترحيل: " + err.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText || "🔄 بدء ترحيل المجلدات والملفات القديمة إلى Google Drive";
+            }
+        }
+    }
 
     // -------------------------------------------------------------
     // ☁️ المزامنة الفورية عبر مجموعات Firestore
     // -------------------------------------------------------------
     function setupRealtimeSync() {
-        // 1. المجلدات
-        db.collection("app_settings").doc("config").onSnapshot((doc) => {
-            if (doc.exists) {
-                folders = doc.data().folders || ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
+        db.collection("folders_items").onSnapshot((snapshot) => {
+            let cloudFolders = [];
+            snapshot.forEach(doc => {
+                if (doc.data().name) cloudFolders.push(doc.data().name);
+            });
+
+            if (cloudFolders.length === 0) {
+                const defaults = ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
+                defaults.forEach(fName => {
+                    db.collection("folders_items").doc(fName).set({ name: fName });
+                });
+                folders = defaults;
             } else {
-                folders = ["العقود والاتفاقيات", "المخططات الهندسية", "فواتير وإيصالات"];
-                db.collection("app_settings").doc("config").set({ folders });
+                folders = cloudFolders;
             }
+
+            library.forEach(doc => {
+                if (doc.folder && !folders.includes(doc.folder)) {
+                    folders.push(doc.folder);
+                }
+            });
+
             renderFoldersAndLibrary();
             renderArchiveIndicators();
         });
 
-        // 2. المعاملات المالية
         db.collection("transactions").onSnapshot((snapshot) => {
             incomes = [];
             expenses = [];
@@ -902,17 +1593,20 @@
             updateFinancialUI();
         });
 
-        // 3. الصور والمستندات (معلومات البيانات المرفوعة)
         db.collection("library_items").onSnapshot((snapshot) => {
             library = [];
             snapshot.forEach(doc => {
-                library.push({ id: doc.id, ...doc.data() });
+                const data = doc.data();
+                library.push({ id: doc.id, ...data });
+
+                if (data.folder && !folders.includes(data.folder)) {
+                    folders.push(data.folder);
+                }
             });
             renderFoldersAndLibrary();
             renderArchiveIndicators();
         });
 
-        // 4. دليل الاتصال
         db.collection("contacts_items").onSnapshot((snapshot) => {
             contacts = [];
             snapshot.forEach(doc => {
@@ -922,13 +1616,50 @@
             renderArchiveIndicators();
         });
 
-        // 5. الملاحظات
         db.collection("notes_items").onSnapshot((snapshot) => {
             notes = [];
             snapshot.forEach(doc => {
                 notes.push({ id: doc.id, ...doc.data() });
             });
             renderNotes();
+            renderArchiveIndicators();
+        });
+
+        db.collection("app_settings").doc("calculator").onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const fields = ['ground', 'first', 'stairs', 'fence', 'parapet', 'tank', 'septic'];
+                fields.forEach(f => {
+                    if (data[`qty_${f}`] !== undefined) document.getElementById(`qty_${f}`).value = data[`qty_${f}`];
+                    if (data[`price_${f}`] !== undefined) document.getElementById(`price_${f}`).value = data[`price_${f}`];
+                });
+
+                const matRates = ['concrete', 'steel', 'blocks', 'cement', 'sand'];
+                matRates.forEach(m => {
+                    if (data[`rate_${m}`] !== undefined) document.getElementById(`rate_${m}`).value = data[`rate_${m}`];
+                });
+
+                if (data.materialInputMode) {
+                    setMaterialInputMode(data.materialInputMode, false);
+                }
+
+                if (data.manualMatQtys) {
+                    Object.keys(data.manualMatQtys).forEach(m => {
+                        const inputEl = document.getElementById(`input_manual_qty_${m}`);
+                        if (inputEl) inputEl.value = data.manualMatQtys[m];
+                    });
+                }
+
+                calcConstructionCost(false);
+            }
+        });
+
+        db.collection("payments_items").onSnapshot((snapshot) => {
+            payments = [];
+            snapshot.forEach(doc => {
+                payments.push({ id: doc.id, ...doc.data() });
+            });
+            renderPayments();
             renderArchiveIndicators();
         });
     }
@@ -946,7 +1677,6 @@
         );
     }
 
-    // 🛠️ ضغط الصور
     function compressImage(file, callback) {
         const maxWidth = 900;
         const maxHeight = 900;
@@ -1015,6 +1745,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('itemDate').valueAsDate = new Date();
         document.getElementById('addDateInput').valueAsDate = new Date();
+        document.getElementById('payDateInput').valueAsDate = new Date();
         setupRealtimeSync();
     });
 
@@ -1038,9 +1769,239 @@
         customCatInput.style.display = (catSelect.value === 'customCategory') ? 'block' : 'none';
     }
 
+    function togglePayCustomStage() {
+        const select = document.getElementById('payStageInput');
+        const customInput = document.getElementById('payCustomStageInput');
+        customInput.style.display = (select.value === 'customPayStage') ? 'block' : 'none';
+    }
+
+    // 💳 الدفعات
+    function addPayment() {
+        const title = document.getElementById('payTitleInput').value.trim();
+        const amount = parseNum(document.getElementById('payAmountInput').value);
+        const stageSelect = document.getElementById('payStageInput').value;
+        const customStage = document.getElementById('payCustomStageInput').value.trim();
+        const status = document.getElementById('payStatusInput').value;
+        const date = document.getElementById('payDateInput').value;
+
+        const finalStage = stageSelect === 'customPayStage' ? customStage : stageSelect;
+
+        if (!title || !amount || amount <= 0 || !finalStage || !date) {
+            alert('يرجى تعبئة كافة بيانات الدفعة بشكل صحيح واختيار المرحلة.');
+            return;
+        }
+
+        db.collection("payments_items").add({
+            title,
+            amount,
+            stage: finalStage,
+            status,
+            date,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            document.getElementById('payTitleInput').value = '';
+            document.getElementById('payAmountInput').value = '';
+            document.getElementById('payStageInput').value = '';
+            document.getElementById('payCustomStageInput').value = '';
+            togglePayCustomStage();
+        });
+    }
+
+    function togglePaymentStatus(docId, currentStatus) {
+        const newStatus = (currentStatus === 'مدفوع') ? 'غير مدفوع' : 'مدفوع';
+        db.collection("payments_items").doc(docId).update({
+            status: newStatus
+        });
+    }
+
+    function deletePayment(docId) {
+        if (confirm('هل أنت متأكد من حذف هذه الدفعة؟')) {
+            db.collection("payments_items").doc(docId).delete();
+        }
+    }
+
+    function renderPayments() {
+        let totalAll = 0;
+        let totalPaid = 0;
+        let totalUnpaid = 0;
+
+        payments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const tbody = document.getElementById('paymentsTableBody');
+        tbody.innerHTML = '';
+
+        payments.forEach(pay => {
+            totalAll += pay.amount || 0;
+            const isPaid = pay.status === 'مدفوع';
+
+            if (isPaid) {
+                totalPaid += pay.amount || 0;
+            } else {
+                totalUnpaid += pay.amount || 0;
+            }
+
+            const badgeHTML = isPaid 
+                ? `<span class="badge-income">🟢 مدفوع</span>`
+                : `<span class="badge-unpaid">🔴 غير مدفوع</span>`;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${escapeHTML(pay.date)}</td>
+                <td><b>${escapeHTML(pay.title)}</b></td>
+                <td>${escapeHTML(pay.stage)}</td>
+                <td style="font-weight:bold; color: var(--primary);">${pay.amount.toLocaleString()} ر.س</td>
+                <td>${badgeHTML}</td>
+                <td>
+                    <button type="button" style="padding: 5px 8px; font-size: 0.78em; background: var(--build-blue);" onclick="togglePaymentStatus('${pay.id}', '${pay.status}')">
+                        ${isPaid ? 'تحويل لغير مدفوع' : 'تحويل لـ مدفوع'}
+                    </button>
+                </td>
+                <td><button class="btn-delete" onclick="deletePayment('${pay.id}')">حذف</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('payTotalAll').innerText = totalAll.toLocaleString() + ' ر.س';
+        document.getElementById('payTotalPaid').innerText = totalPaid.toLocaleString() + ' ر.س';
+        document.getElementById('payTotalUnpaid').innerText = totalUnpaid.toLocaleString() + ' ر.س';
+    }
+
+    function setMaterialInputMode(mode, triggerCalc = true) {
+        materialInputMode = mode;
+        document.getElementById('btnMatModeAuto').classList.toggle('active', mode === 'auto');
+        document.getElementById('btnMatModeManual').classList.toggle('active', mode === 'manual');
+
+        const items = ['concrete', 'steel', 'blocks', 'cement', 'sand'];
+
+        items.forEach(m => {
+            const cellEl = document.getElementById(`cell_qty_${m}`);
+            if (mode === 'manual') {
+                cellEl.innerHTML = `<input type="text" id="input_manual_qty_${m}" placeholder="الكمية" oninput="calcConstructionCost()" inputmode="decimal">`;
+            } else {
+                const unitMap = { concrete: 'م³', steel: 'طن', blocks: 'حبة', cement: 'كيس', sand: 'م³' };
+                cellEl.innerHTML = `<b id="mat_qty_${m}">0</b> ${unitMap[m]}`;
+            }
+        });
+
+        if (triggerCalc) {
+            calcConstructionCost();
+        }
+    }
+
+    function calcConstructionCost(saveToCloud = true) {
+        const items = ['ground', 'first', 'stairs', 'fence', 'parapet', 'tank', 'septic'];
+        let totalLabor = 0;
+        let saveData = { materialInputMode };
+
+        items.forEach(item => {
+            const qtyVal = document.getElementById(`qty_${item}`).value;
+            const priceVal = document.getElementById(`price_${item}`).value;
+
+            const qty = parseNum(qtyVal);
+            const price = parseNum(priceVal);
+
+            const itemTotal = qty * price;
+            
+            document.getElementById(`tot_${item}`).innerText = itemTotal.toLocaleString() + ' ر.س';
+            totalLabor += itemTotal;
+
+            saveData[`qty_${item}`] = qtyVal;
+            saveData[`price_${item}`] = priceVal;
+        });
+
+        let estConcrete = 0, estSteel = 0, estBlocks = 0, estCement = 0, estSand = 0;
+        let manualQtys = {};
+
+        if (materialInputMode === 'auto') {
+            const groundArea = parseNum(document.getElementById('qty_ground').value);
+            const firstArea = parseNum(document.getElementById('qty_first').value);
+            const stairsArea = parseNum(document.getElementById('qty_stairs').value);
+            const totalBuildingArea = groundArea + firstArea + stairsArea;
+
+            estConcrete = Math.round(totalBuildingArea * 0.45);
+            estSteel = parseFloat((totalBuildingArea * 0.05).toFixed(2));
+            estBlocks = Math.round(totalBuildingArea * 90 + parseNum(document.getElementById('qty_fence').value) * 12.5);
+            estCement = Math.round(totalBuildingArea * 3.8);
+            estSand = Math.round(totalBuildingArea * 0.25);
+
+            document.getElementById('mat_qty_concrete').innerText = estConcrete.toLocaleString();
+            document.getElementById('mat_qty_steel').innerText = estSteel.toLocaleString();
+            document.getElementById('mat_qty_blocks').innerText = estBlocks.toLocaleString();
+            document.getElementById('mat_qty_cement').innerText = estCement.toLocaleString();
+            document.getElementById('mat_qty_sand').innerText = estSand.toLocaleString();
+        } else {
+            const mList = ['concrete', 'steel', 'blocks', 'cement', 'sand'];
+            mList.forEach(m => {
+                const el = document.getElementById(`input_manual_qty_${m}`);
+                if (el) manualQtys[m] = el.value;
+            });
+
+            estConcrete = parseNum(manualQtys['concrete']);
+            estSteel = parseNum(manualQtys['steel']);
+            estBlocks = parseNum(manualQtys['blocks']);
+            estCement = parseNum(manualQtys['cement']);
+            estSand = parseNum(manualQtys['sand']);
+
+            saveData['manualMatQtys'] = manualQtys;
+        }
+
+        const rateConcrete = parseNum(document.getElementById('rate_concrete').value);
+        const rateSteel = parseNum(document.getElementById('rate_steel').value);
+        const rateBlocks = parseNum(document.getElementById('rate_blocks').value);
+        const rateCement = parseNum(document.getElementById('rate_cement').value);
+        const rateSand = parseNum(document.getElementById('rate_sand').value);
+
+        saveData['rate_concrete'] = document.getElementById('rate_concrete').value;
+        saveData['rate_steel'] = document.getElementById('rate_steel').value;
+        saveData['rate_blocks'] = document.getElementById('rate_blocks').value;
+        saveData['rate_cement'] = document.getElementById('rate_cement').value;
+        saveData['rate_sand'] = document.getElementById('rate_sand').value;
+
+        const totConcrete = estConcrete * rateConcrete;
+        const totSteel = estSteel * rateSteel;
+        const totBlocks = estBlocks * rateBlocks;
+        const totCement = estCement * rateCement;
+        const totSand = estSand * rateSand;
+
+        document.getElementById('mat_tot_concrete').innerText = totConcrete.toLocaleString() + ' ر.س';
+        document.getElementById('mat_tot_steel').innerText = totSteel.toLocaleString() + ' ر.س';
+        document.getElementById('mat_tot_blocks').innerText = totBlocks.toLocaleString() + ' ر.س';
+        document.getElementById('mat_tot_cement').innerText = totCement.toLocaleString() + ' ر.س';
+        document.getElementById('mat_tot_sand').innerText = totSand.toLocaleString() + ' ر.س';
+
+        const totalMaterials = totConcrete + totSteel + totBlocks + totCement + totSand;
+        const grandTotal = totalLabor + totalMaterials;
+
+        document.getElementById('subTotalLabor').innerText = totalLabor.toLocaleString() + ' ر.س';
+        document.getElementById('subTotalMaterials').innerText = totalMaterials.toLocaleString() + ' ر.س';
+        document.getElementById('calcGrandTotal').innerText = grandTotal.toLocaleString() + ' ر.س';
+
+        if (saveToCloud) {
+            db.collection("app_settings").doc("calculator").set(saveData, { merge: true });
+        }
+    }
+
+    function exportCalcPDF() {
+        window.print();
+    }
+
+    function shareCalcReport() {
+        const grandTotal = document.getElementById('calcGrandTotal').innerText;
+        const laborTotal = document.getElementById('subTotalLabor').innerText;
+        const matTotal = document.getElementById('subTotalMaterials').innerText;
+
+        const text = `📊 تقرير حاسبة التكاليف والمواد الأولية للبناء (BuildTrack):\n` +
+            `🔹 إجمالي المصنعيات والمسطحات: ${laborTotal}\n` +
+            `🔹 إجمالي تكاليف المواد الأولية: ${matTotal}\n` +
+            `-----------------------------------\n` +
+            `💰 الإجمالي الكلي الشامل: ${grandTotal}`;
+
+        executeShare('تقرير التكاليف والمواد - BuildTrack', text);
+    }
+
     // 💰 التعاملات المالية
     function addIncome() {
-        const amount = parseFloat(document.getElementById('addAmountInput').value);
+        const amount = parseNum(document.getElementById('addAmountInput').value);
         const reason = document.getElementById('addReasonInput').value.trim();
         const date = document.getElementById('addDateInput').value;
 
@@ -1063,7 +2024,7 @@
 
     function addExpense() {
         const name = document.getElementById('itemName').value.trim();
-        const amount = parseFloat(document.getElementById('itemAmount').value);
+        const amount = parseNum(document.getElementById('itemAmount').value);
         const stageSelect = document.getElementById('itemStage').value;
         const customStage = document.getElementById('customStageInput').value.trim();
         const date = document.getElementById('itemDate').value;
@@ -1151,7 +2112,32 @@
         renderArchiveIndicators();
     }
 
-    // 📂 المجلدات والمستندات
+    function setUploadType(type) {
+        currentUploadMode = type;
+        document.getElementById('btnTypeFile').classList.toggle('active', type === 'file');
+        document.getElementById('btnTypeLink').classList.toggle('active', type === 'link');
+
+        document.getElementById('fileUploadContainer').style.display = (type === 'file') ? 'flex' : 'none';
+        document.getElementById('linkUploadContainer').style.display = (type === 'link') ? 'block' : 'none';
+
+        if (type === 'link') {
+            document.getElementById('docCategory').value = 'رابط خارجي';
+        }
+        document.getElementById('selectedFileNotice').style.display = 'none';
+        document.getElementById('btnSaveDoc').style.display = 'none';
+    }
+
+    function handleLinkInput() {
+        const val = document.getElementById('docLinkUrl').value.trim();
+        if (val) {
+            const noticeEl = document.getElementById('selectedFileNotice');
+            noticeEl.style.display = 'block';
+            noticeEl.style.color = 'var(--accent)';
+            noticeEl.innerText = '🔗 تم إدخال الرابط! اكتب عنوانه واختر المجلد ثم اضغط زر الحفظ.';
+            document.getElementById('btnSaveDoc').style.display = 'block';
+        }
+    }
+
     function createFolder() {
         const input = document.getElementById('newFolderName');
         const name = input.value.trim();
@@ -1166,9 +2152,28 @@
             return;
         }
 
-        folders.push(name);
-        input.value = '';
-        db.collection("app_settings").doc("config").set({ folders });
+        db.collection("folders_items").doc(name).set({
+            name: name,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(async () => {
+            input.value = '';
+
+            if (GOOGLE_APPS_SCRIPT_URL && !GOOGLE_APPS_SCRIPT_URL.includes('ضع_هنا')) {
+                try {
+                    await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'createFolder',
+                            folderName: name
+                        })
+                    });
+                } catch(e) {
+                    console.error("خطأ أثناء إنشاء المجلد بـ Drive:", e);
+                }
+            }
+        });
     }
 
     function deleteFolder(folderName, event) {
@@ -1181,9 +2186,9 @@
         }
 
         if (confirm(`هل أنت تأكد من حذف المجلد "${folderName}"؟`)) {
-            folders = folders.filter(f => f !== folderName);
-            if (currentSelectedFolder === folderName) currentSelectedFolder = null;
-            db.collection("app_settings").doc("config").set({ folders });
+            db.collection("folders_items").doc(folderName).delete().then(() => {
+                if (currentSelectedFolder === folderName) currentSelectedFolder = null;
+            });
         }
     }
 
@@ -1192,45 +2197,56 @@
         renderFoldersAndLibrary();
     }
 
-    // ⚡ دالة تجميع الأجزاء وفتح أو تنزيل المستندات كبيرة الحجم
     async function openDocFile(docId) {
         const doc = library.find(item => item.id === docId);
         if (!doc) return;
 
-        let fullData = doc.fileData;
+        const modal = document.getElementById('previewModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+        const modalBody = document.getElementById('modalBody');
 
-        // إذا كان الملف مُشرحاً ومقسماً، نجمع أجزاءه سحابياً
-        if (doc.isChunked) {
-            const noticeEl = document.getElementById('selectedFileNotice');
-            try {
-                const chunksSnap = await db.collection("library_items").doc(docId).collection("chunks").orderBy("index").get();
-                let chunksArray = [];
-                chunksSnap.forEach(cDoc => {
-                    chunksArray.push(cDoc.data());
-                });
-                chunksArray.sort((a, b) => a.index - b.index);
-                fullData = chunksArray.map(c => c.data).join('');
-            } catch (err) {
-                alert("حدث خطأ أثناء جلب الملف من السحابة.");
-                return;
-            }
-        }
+        modalTitle.innerText = doc.title || 'معاينة المستند';
+        modal.style.display = 'flex';
 
-        if (!fullData) {
-            alert("الملف غير متوفر.");
+        if (doc.isLink) {
+            modalDownloadBtn.style.display = 'none';
+            modalBody.innerHTML = `
+                <div style="text-align:center; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                    <span style="font-size:3.5em;">🌐</span>
+                    <h3 style="color:var(--primary); margin:10px 0;">${escapeHTML(doc.title)}</h3>
+                    <p style="color:#666; font-size:0.85em; word-break:break-all;">${escapeHTML(doc.linkUrl)}</p>
+                    <a href="${escapeHTML(doc.linkUrl)}" target="_blank" class="btn-call" style="background:var(--accent); text-decoration:none; padding:10px 20px; font-size:1em; margin-top:10px;">
+                        🔗 فتح الرابط في تبويب جديد
+                    </a>
+                </div>
+            `;
             return;
         }
 
-        if (fullData.startsWith('data:image/')) {
-            window.open(fullData);
+        modalDownloadBtn.style.display = 'inline-flex';
+        modalDownloadBtn.href = doc.driveWebViewLink || '#';
+
+        if (doc.driveWebViewLink) {
+            modalBody.innerHTML = `<iframe src="${doc.driveWebViewLink.replace('/view', '/preview')}"></iframe>`;
         } else {
-            const downloadLink = document.createElement('a');
-            downloadLink.href = fullData;
-            downloadLink.download = doc.fileName || doc.title || 'document';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            downloadLink.remove();
+            modalBody.innerHTML = `
+                <div style="text-align:center; background:#fff; padding:25px; border-radius:10px;">
+                    <span style="font-size:4em;">📁</span>
+                    <h3 style="color:var(--primary); margin:10px 0;">${escapeHTML(doc.title)}</h3>
+                    <a href="${doc.driveWebViewLink}" target="_blank" class="btn-call" style="background:var(--accent); text-decoration:none; padding:10px 20px; font-size:1em; margin-top:10px;">
+                        📥 فتح / تحميل من Google Drive
+                    </a>
+                </div>
+            `;
         }
+    }
+
+    function closePreviewModal() {
+        const modal = document.getElementById('previewModal');
+        const modalBody = document.getElementById('modalBody');
+        modal.style.display = 'none';
+        modalBody.innerHTML = '';
     }
 
     function renderFoldersAndLibrary() {
@@ -1255,24 +2271,29 @@
             folderGrid.style.display = 'none';
 
             galleryTitle.style.display = 'block';
-            galleryTitle.innerText = `📄 المستندات والصور في (${currentSelectedFolder})`;
+            galleryTitle.innerText = `📄 العناصر والمستندات في (${currentSelectedFolder})`;
             galleryGrid.style.display = 'grid';
 
             const docsToDisplay = library.filter(doc => doc.folder === currentSelectedFolder);
 
             if (docsToDisplay.length === 0) {
-                galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1; font-size:0.85em;">لا توجد مستندات أو صور داخل هذا المجلد.</p>';
+                galleryGrid.innerHTML = '<p style="color:#777; grid-column:1/-1; font-size:0.85em;">لا توجد مستندات أو صور أو روابط داخل هذا المجلد.</p>';
                 return;
             }
 
             docsToDisplay.forEach((doc) => {
-                const isImage = doc.fileData && doc.fileData.startsWith('data:image/');
+                const isLink = doc.isLink;
                 const card = document.createElement('div');
                 card.className = 'media-card';
 
                 let previewHTML = '';
-                if (isImage) {
-                    previewHTML = `<img src="${doc.fileData}" alt="${escapeHTML(doc.title)}" onclick="openDocFile('${doc.id}')">`;
+                if (isLink) {
+                    previewHTML = `
+                        <div class="doc-icon-preview" onclick="openDocFile('${doc.id}')" style="background:#e8f8f0;">
+                            <span style="font-size: 2.5em;">🌐</span>
+                            <span style="font-size: 0.72em; color: var(--accent); font-weight: bold; margin-top: 4px;">رابط خارجي</span>
+                        </div>
+                    `;
                 } else {
                     let icon = '📄';
                     const catLower = (doc.category || '').toLowerCase();
@@ -1284,9 +2305,9 @@
                     else if (catLower.includes('word') || catLower.includes('excel') || titleLower.endsWith('.doc') || titleLower.endsWith('.docx') || titleLower.endsWith('.xls') || titleLower.endsWith('.xlsx')) icon = '📊';
 
                     previewHTML = `
-                        <div class="doc-icon-preview" onclick="openDocFile('${doc.id}')">
+                        <div class="doc-icon-preview" onclick="openDocFile('${doc.id}')" style="background:#f0f7ff;">
                             <span style="font-size: 2.5em;">${icon}</span>
-                            <span style="font-size: 0.72em; color: var(--primary); font-weight: bold; margin-top: 4px;">اضغط للفتح / التنزيل</span>
+                            <span style="font-size: 0.72em; color: var(--drive-color); font-weight: bold; margin-top: 4px;">Google Drive</span>
                         </div>
                     `;
                 }
@@ -1297,7 +2318,7 @@
                         <h4>${escapeHTML(doc.title)}</h4>
                         <p><b>المجلد:</b> ${escapeHTML(doc.folder)}</p>
                         <p><b>النوع:</b> ${escapeHTML(doc.category)}</p>
-                        <button class="btn-delete" style="margin-top:6px; width:100%;" onclick="deleteDoc('${doc.id}')">حذف الملف</button>
+                        <button class="btn-delete" style="margin-top:6px; width:100%;" onclick="deleteDoc('${doc.id}')">حذف العنصر</button>
                     </div>
                 `;
                 galleryGrid.appendChild(card);
@@ -1320,7 +2341,7 @@
                     <button class="folder-delete-btn" onclick="deleteFolder('${escapeHTML(f)}', event)">✕</button>
                     <div class="icon">📁</div>
                     <h4>${escapeHTML(f)}</h4>
-                    <div class="count">${count} ملفات</div>
+                    <div class="count">${count} عناصر</div>
                 `;
                 folderGrid.appendChild(card);
             });
@@ -1347,7 +2368,6 @@
         document.getElementById('btnSaveDoc').style.display = 'block';
     }
 
-    // ⚡ دالة الحفظ بتقنية التقسيم المفتوح للبيانات (Chunking Engine)
     async function saveDocument() {
         const title = document.getElementById('docTitle').value.trim();
         const categorySelect = document.getElementById('docCategory').value;
@@ -1356,87 +2376,88 @@
 
         const finalCategory = categorySelect === 'customCategory' ? customCategory : categorySelect;
 
-        if (!pendingDocFile) {
-            alert('يرجى اختيار صورة أو مستند أولاً.');
+        if (!title) {
+            alert('يرجى كتابة عنوان أو اسم المستند.');
             return;
         }
 
-        if (!title || !finalCategory || !folder) {
-            alert('يرجى تعبئة جميع الحقول واختيار المجلد.');
+        if (!folder) {
+            alert('يرجى اختيار المجلد.');
             return;
         }
 
         const noticeEl = document.getElementById('selectedFileNotice');
-        noticeEl.style.color = 'var(--info)';
-        noticeEl.innerText = '⏳ جاري تجهيز وتقسيم الملف للرفع السحابي المفتوح...';
 
-        const processAndSave = async (fileDataBase64) => {
-            try {
-                const CHUNK_SIZE = 400 * 1024; // تقسيم بدقة 400KB للأجزاء
-                const isLarge = fileDataBase64.length > CHUNK_SIZE;
+        if (currentUploadMode === 'link') {
+            const linkUrl = document.getElementById('docLinkUrl').value.trim();
+            if (!linkUrl) {
+                alert('يرجى كتابة أو لصق الرابط الإلكتروني.');
+                return;
+            }
 
-                // 1. إنشاء المستند الرئيسي للملف
-                const mainDocData = {
-                    title,
-                    category: finalCategory,
-                    folder,
-                    fileName: pendingDocFile.name,
-                    isChunked: isLarge,
-                    fileData: isLarge ? (pendingDocFile.type.startsWith('image/') ? fileDataBase64.substring(0, 1000) : null) : fileDataBase64,
-                    date: new Date().toLocaleDateString('ar-SA'),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                const docRef = await db.collection("library_items").add(mainDocData);
-
-                // 2. إذا كان الملف كبيراً، يتم رفع أجزائه في مجموعة فرعية (Subcollection)
-                if (isLarge) {
-                    const totalChunks = Math.ceil(fileDataBase64.length / CHUNK_SIZE);
-                    for (let i = 0; i < totalChunks; i++) {
-                        const chunkStr = fileDataBase64.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                        await docRef.collection("chunks").doc(i.toString()).set({
-                            index: i,
-                            data: chunkStr
-                        });
-                        noticeEl.innerText = `⏳ جاري رفع الأجزاء السحابية (${i + 1} من ${totalChunks})...`;
-                    }
-                }
-
+            db.collection("library_items").add({
+                title,
+                category: finalCategory || 'رابط خارجي',
+                folder,
+                isLink: true,
+                linkUrl,
+                date: new Date().toLocaleDateString('ar-SA'),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
                 currentSelectedFolder = folder;
-
-                pendingDocFile = null;
                 document.getElementById('docTitle').value = '';
-                document.getElementById('docCategory').value = 'فاتورة';
-                document.getElementById('customCategoryInput').value = '';
-                toggleCustomCategoryInput();
+                document.getElementById('docLinkUrl').value = '';
                 document.getElementById('docFolderSelect').value = '';
                 document.getElementById('selectedFileNotice').style.display = 'none';
                 document.getElementById('btnSaveDoc').style.display = 'none';
 
-                alert('تم رفع وحفظ الملف سحابياً بنجاح بالتقسيم المفتوح!');
-            } catch (err) {
-                alert('حدث خطأ أثناء الحفظ السحابي: ' + err.message);
-            }
-        };
+                alert('تم حفظ الرابط سحابياً بنجاح!');
+            });
+            return;
+        }
 
-        if (pendingDocFile.type.startsWith('image/')) {
-            compressImage(pendingDocFile, processAndSave);
-        } else {
-            const reader = new FileReader();
-            reader.readAsDataURL(pendingDocFile);
-            reader.onload = function(e) {
-                processAndSave(e.target.result);
-            };
+        if (!pendingDocFile) {
+            alert('يرجى اختيار صورة أو ملف أولاً.');
+            return;
+        }
+
+        noticeEl.style.color = 'var(--drive-color)';
+        noticeEl.innerText = `⏳ جاري رفع الملف وتخزينه داخل مجلد (${folder}) في Google Drive...`;
+
+        try {
+            const driveRes = await uploadFileToGoogleDriveDirect(pendingDocFile, folder);
+
+            await db.collection("library_items").add({
+                title,
+                category: finalCategory,
+                folder,
+                fileName: pendingDocFile.name,
+                isLink: false,
+                driveFileId: driveRes.fileId,
+                driveWebViewLink: driveRes.webViewLink,
+                date: new Date().toLocaleDateString('ar-SA'),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            currentSelectedFolder = folder;
+
+            pendingDocFile = null;
+            document.getElementById('docTitle').value = '';
+            document.getElementById('docCategory').value = 'فاتورة';
+            document.getElementById('customCategoryInput').value = '';
+            toggleCustomCategoryInput();
+            document.getElementById('docFolderSelect').value = '';
+            document.getElementById('selectedFileNotice').style.display = 'none';
+            document.getElementById('btnSaveDoc').style.display = 'none';
+
+            alert(`تم رفع الملف وتخزينه بنجاح داخل مجلد (${folder}) في Google Drive!`);
+        } catch (err) {
+            alert('حدث خطأ أثناء الرفع إلى Google Drive: ' + err.message);
         }
     }
 
     async function deleteDoc(docId) {
-        if (confirm('هل أنت تأكد من حذف هذا المستند؟')) {
-            // حذف أجزاء الملف أولاً إن وجدت ثم الحذف الرئيسي
-            try {
-                const chunksSnap = await db.collection("library_items").doc(docId).collection("chunks").get();
-                chunksSnap.forEach(cDoc => cDoc.ref.delete());
-            } catch(e) {}
+        if (confirm('هل أنت تأكد من حذف هذا العنصر؟')) {
             db.collection("library_items").doc(docId).delete();
         }
     }
@@ -1645,6 +2666,7 @@
         document.getElementById('indLibrary').innerText = library.length;
         document.getElementById('indNotes').innerText = notes.length;
         document.getElementById('indContacts').innerText = contacts.length;
+        document.getElementById('indPayments').innerText = payments.length;
         document.getElementById('indTransactions').innerText = incomes.length + expenses.length;
     }
 
@@ -1656,6 +2678,7 @@
             folders,
             notes,
             contacts,
+            payments,
             exportDate: new Date().toISOString()
         };
 
@@ -1677,12 +2700,17 @@
             try {
                 const data = JSON.parse(event.target.result);
                 if (confirm('سيتم رفع الأرشيف إلى السحابة بنجاح. هل تريد الاستمرار؟')) {
-                    if (data.folders) db.collection("app_settings").doc("config").set({ folders: data.folders });
+                    if (data.folders) {
+                        data.folders.forEach(fName => {
+                            db.collection("folders_items").doc(fName).set({ name: fName });
+                        });
+                    }
                     if (data.incomes) data.incomes.forEach(item => db.collection("transactions").add({ ...item, type: 'income' }));
                     if (data.expenses) data.expenses.forEach(item => db.collection("transactions").add({ ...item, type: 'expense' }));
                     if (data.library) data.library.forEach(item => db.collection("library_items").add(item));
                     if (data.contacts) data.contacts.forEach(item => db.collection("contacts_items").add(item));
                     if (data.notes) data.notes.forEach(item => db.collection("notes_items").add(item));
+                    if (data.payments) data.payments.forEach(item => db.collection("payments_items").add(item));
                     alert('تم رفع الأرشيف للسحابة بنجاح!');
                 }
             } catch (err) {
@@ -1693,10 +2721,13 @@
     }
 
     function resetFinancialDataOnly() {
-        if (confirm('هل أنت متأكد من تصفير الحسابات المالية سحابياً؟')) {
+        if (confirm('هل أنت متأكد من تصفير الحسابات المالية والدفعات سحابياً؟')) {
             db.collection("transactions").get().then(snapshot => {
                 snapshot.forEach(doc => doc.ref.delete());
-                alert('تم تصفير البيانات المالية سحابياً.');
+            });
+            db.collection("payments_items").get().then(snapshot => {
+                snapshot.forEach(doc => doc.ref.delete());
+                alert('تم تصفير البيانات المالية والدفعات سحابياً.');
             });
         }
     }
